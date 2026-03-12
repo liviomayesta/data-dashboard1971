@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Indikator Pembangunan – Pangkalpinang</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style id="dash-styles" style="display:none">
+
+:root{
+  --bg:#06080f;--panel:#0d1120;--panel2:#111827;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.04);
+  --teal:#00e5c3;--blue:#4f8ef7;--purple:#a855f7;--orange:#f97316;
+  --yellow:#fbbf24;--red:#ef4444;--green:#22c55e;--pink:#ec4899;
+  --indigo:#6366f1;--indigo2:#818cf8;
+  --text:#e2e8f0;--muted:#64748b;--muted2:#475569;
+  --header-bg:linear-gradient(135deg,#0d1120 0%,#0a1628 50%,#100d1e 100%);
+}
+/* ── LIGHT THEME ── */
+[data-theme="light"]{
+  --bg:#f0f4f8;--panel:#ffffff;--panel2:#f8fafc;
+  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.05);
+  --text:#1e293b;--muted:#64748b;--muted2:#94a3b8;
+  --teal:#00b89e;--blue:#3b7de8;--purple:#9333ea;--orange:#ea6c0a;
+  --yellow:#d97706;--red:#dc2626;--green:#16a34a;--pink:#db2777;
+  --indigo:#4f46e5;--indigo2:#6366f1;
+  --header-bg:linear-gradient(135deg,#ffffff 0%,#f1f5ff 50%,#f5f0ff 100%);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── HEADER ── */
+header{background:var(--header-bg);border-bottom:1px solid var(--border);padding:13px 28px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:200;}
+.logo-badge{width:42px;height:42px;border-radius:12px;flex-shrink:0;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 0 18px rgba(0,229,195,0.3);}
+header h1{font-size:0.95rem;font-weight:700;}
+header p{font-size:0.63rem;color:var(--muted);font-family:'Space Mono',monospace;margin-top:1px;}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.mode-toggle{display:flex;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.mode-btn{padding:7px 15px;font-family:'Sora',sans-serif;font-size:0.73rem;font-weight:600;cursor:pointer;border:none;background:none;color:var(--muted);display:flex;align-items:center;gap:5px;transition:all 0.2s;white-space:nowrap;}
+.mode-btn.active{background:var(--indigo);color:#fff;box-shadow:0 0 12px rgba(99,102,241,0.4);}
+.mode-btn:hover:not(.active){background:rgba(255,255,255,0.07);color:var(--text);}
+.mode-sep{width:1px;background:var(--border);}
+.user-badge{display:none;align-items:center;gap:6px;padding:5px 11px;border-radius:8px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);font-size:0.68rem;font-weight:600;color:var(--indigo2);}
+.user-badge.show{display:inline-flex;}
+.logout-btn{display:none;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.22);color:var(--red);font-size:0.7rem;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;transition:all 0.16s;}
+.logout-btn.show{display:inline-flex;}
+.logout-btn:hover{background:rgba(239,68,68,0.2);}
+.theme-toggle-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:15px;cursor:pointer;transition:all 0.18s;flex-shrink:0;}
+.theme-toggle-btn:hover{background:rgba(255,255,255,0.12);transform:rotate(20deg);}
+[data-theme="light"] .theme-toggle-btn{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.12);}
+[data-theme="light"] .theme-toggle-btn:hover{background:rgba(0,0,0,0.1);}
+.chg-badge{background:var(--red);color:#fff;border-radius:18px;font-size:0.57rem;font-weight:700;padding:1px 6px;display:none;}
+.chg-badge.show{display:inline;}
+
+/* ── VIEWS ── */
+#view-dashboard{display:block;}
+#view-admin{display:none;}
+
+/* ── YEAR BAR ── */
+.year-bar{background:var(--panel);border-bottom:1px solid var(--border);padding:9px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.year-bar-label{font-size:0.62rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;}
+.year-dropdown-wrap{position:relative;display:inline-flex;align-items:center;}
+.dd-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;}
+.year-select{appearance:none;-webkit-appearance:none;background:var(--panel2);border:1px solid rgba(0,229,195,0.35);border-radius:9px;color:var(--teal);font-family:'Sora',sans-serif;font-size:0.78rem;font-weight:700;padding:7px 30px 7px 30px;cursor:pointer;outline:none;min-width:200px;transition:border-color 0.18s,box-shadow 0.18s;}
+.year-select:hover,.year-select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,195,0.1);}
+.year-select option{background:#111827;color:var(--text);}
+.year-select optgroup{color:var(--muted);font-size:0.68rem;}
+.dd-arrow{position:absolute;right:9px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--teal);font-size:9px;}
+.year-range-badge{display:flex;align-items:center;gap:5px;background:rgba(0,229,195,0.07);border:1px solid rgba(0,229,195,0.15);border-radius:7px;padding:5px 10px;font-size:0.67rem;font-family:'Space Mono',monospace;color:var(--muted);}
+.year-range-badge strong{color:var(--teal);}
+.quick-btns{display:flex;gap:5px;margin-left:auto;}
+.qbtn{padding:5px 11px;border-radius:7px;font-size:0.66rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Sora',sans-serif;transition:all 0.15s;white-space:nowrap;}
+.qbtn:hover{border-color:var(--teal);color:var(--teal);background:rgba(0,229,195,0.06);}
+.qbtn.qactive{border-color:rgba(168,85,247,0.4);color:var(--purple);background:rgba(168,85,247,0.08);}
+
+/* ── NAV ── */
+nav{display:flex;gap:3px;padding:12px 28px 0;border-bottom:1px solid var(--border);overflow-x:auto;}
+nav button{background:none;border:none;color:var(--muted);font-family:'Sora',sans-serif;font-size:0.74rem;font-weight:600;padding:8px 15px;cursor:pointer;border-radius:8px 8px 0 0;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;}
+nav button.active{color:var(--teal);border-bottom-color:var(--teal);background:rgba(0,229,195,0.06);}
+nav button:hover:not(.active){color:var(--text);background:rgba(255,255,255,0.04);}
+
+/* ── DASHBOARD ── */
+.dash-main{padding:22px 28px;max-width:1600px;margin:0 auto;}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:13px;margin-bottom:22px;}
+.kpi-card{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:16px;position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(0,0,0,0.4);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);border-radius:13px 13px 0 0;}
+.kpi-label{font-size:0.63rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:7px;line-height:1.3;}
+.kpi-value{font-size:1.45rem;font-weight:800;font-family:'Space Mono',monospace;color:var(--accent);}
+.kpi-year{font-size:0.62rem;color:var(--muted);margin-top:4px;font-family:'Space Mono',monospace;}
+.kpi-icon{position:absolute;right:13px;top:13px;font-size:1.2rem;opacity:0.22;}
+.chart-grid{display:grid;gap:14px;margin-bottom:14px;}
+.chart-grid-2{grid-template-columns:1fr 1fr;}
+.chart-grid-3{grid-template-columns:2fr 1fr;}
+.chart-grid-3b{grid-template-columns:1fr 1fr 1fr;}
+.chart-card{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:18px;}
+.chart-title{font-size:0.76rem;font-weight:700;margin-bottom:2px;}
+.chart-sub{font-size:0.63rem;color:var(--muted);margin-bottom:13px;}
+.mode-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:18px;font-size:0.61rem;font-weight:700;background:rgba(0,229,195,0.12);color:var(--teal);margin-bottom:11px;border:1px solid rgba(0,229,195,0.2);}
+.mode-badge.single{background:rgba(251,191,36,0.12);color:var(--yellow);border-color:rgba(251,191,36,0.2);}
+.section-label{font-size:0.61rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;gap:8px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── ADMIN ── */
+.admin-layout{display:flex;min-height:calc(100vh - 57px);}
+.admin-sidebar{width:220px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);padding:20px 0;position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto;}
+.sidebar-section{padding:0 10px;margin-bottom:6px;}
+.sidebar-lbl{font-size:0.58rem;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.1em;padding:0 8px;margin-bottom:5px;}
+.snav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;font-size:0.76rem;font-weight:500;color:var(--muted);transition:all 0.16s;border:none;background:none;width:100%;text-align:left;}
+.snav-item:hover{color:var(--text);background:rgba(255,255,255,0.05);}
+.snav-item.active{color:var(--indigo2);background:rgba(99,102,241,0.12);font-weight:600;}
+.snav-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.admin-main{flex:1;padding:28px;overflow-x:auto;}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.stat-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.stat-val{font-size:1.3rem;font-weight:800;font-family:'Space Mono',monospace;line-height:1;}
+.stat-lbl{font-size:0.65rem;color:var(--muted);margin-top:2px;}
+.admin-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.admin-topbar h2{font-size:1.15rem;font-weight:800;}
+.admin-topbar p{font-size:0.7rem;color:var(--muted);margin-top:2px;}
+.btn{padding:8px 16px;border-radius:9px;font-family:'Sora',sans-serif;font-size:0.76rem;font-weight:600;cursor:pointer;border:none;transition:all 0.17s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--indigo);color:#fff;}
+.btn-primary:hover{background:#4f46e5;transform:translateY(-1px);}
+.btn-ghost{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{background:rgba(255,255,255,0.1);}
+.btn-success{background:var(--green);color:#fff;}
+.btn-success:hover{background:#059669;transform:translateY(-1px);}
+.apanel{background:var(--panel);border:1px solid var(--border);border-radius:14px;margin-bottom:18px;}
+.apanel-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+.apanel-title{font-size:0.85rem;font-weight:700;}
+.apanel-sub{font-size:0.66rem;color:var(--muted);margin-top:2px;}
+.apanel-body{padding:20px;overflow-x:auto;}
+.asec{display:none;}.asec.active{display:block;}
+.cat-tag{display:inline-flex;align-items:center;padding:2px 9px;border-radius:6px;font-size:0.6rem;font-weight:600;background:rgba(99,102,241,0.12);color:var(--indigo2);}
+table.etable{width:100%;border-collapse:collapse;font-size:0.76rem;min-width:900px;}
+table.etable th{padding:9px 12px;text-align:left;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+table.etable th.year-th{text-align:center;min-width:88px;}
+table.etable td{padding:7px 10px;border-bottom:1px solid var(--border2);vertical-align:middle;}
+table.etable tr:last-child td{border-bottom:none;}
+table.etable tr:hover td{background:rgba(255,255,255,0.02);}
+.fname{font-weight:600;color:var(--text);font-size:0.73rem;}
+.fdesc{font-size:0.62rem;color:var(--muted);margin-top:1px;}
+.funit{display:inline-block;padding:1px 7px;border-radius:18px;font-size:0.58rem;font-weight:700;background:rgba(34,197,94,0.14);color:var(--green);margin-top:3px;}
+.einput{background:var(--panel2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Space Mono',monospace;font-size:0.75rem;padding:5px 8px;width:96px;text-align:center;transition:border-color 0.14s;outline:none;display:block;margin:0 auto;}
+.einput:focus{border-color:var(--indigo);}
+.einput.changed{border-color:var(--yellow);background:rgba(245,158,11,0.07);}
+
+/* ── TOAST ── */
+/* ── LIGHT THEME OVERRIDES ── */
+[data-theme="light"] #loadingOverlay{background:#f0f4f8;}
+[data-theme="light"] .spinner{border-color:rgba(0,180,155,0.2);border-top-color:#00b89e;}
+[data-theme="light"] .login-overlay{background:rgba(240,244,248,0.92);}
+[data-theme="light"] .login-box{background:#fff;border-color:rgba(79,70,229,0.25);box-shadow:0 24px 80px rgba(0,0,0,0.15);}
+[data-theme="light"] .l-input{background:#f8fafc;border-color:rgba(0,0,0,0.12);color:#1e293b;}
+[data-theme="light"] .admin-sidebar{background:#fff;border-color:rgba(0,0,0,0.08);}
+[data-theme="light"] .snav-item:hover{background:rgba(0,0,0,0.04);}
+[data-theme="light"] .snav-item.active{background:rgba(79,70,229,0.08);}
+[data-theme="light"] .year-select{background:#fff;border-color:rgba(0,180,155,0.4);color:#00b89e;}
+[data-theme="light"] .year-select option{background:#fff;color:#1e293b;}
+[data-theme="light"] .mode-toggle{background:rgba(0,0,0,0.04);}
+[data-theme="light"] .mode-btn:hover:not(.active){background:rgba(0,0,0,0.06);color:#1e293b;}
+[data-theme="light"] .top-banner#offlineBanner{background:rgba(217,119,6,0.08);border-color:rgba(217,119,6,0.2);}
+[data-theme="light"] .top-banner#configBanner{background:rgba(79,70,229,0.06);border-color:rgba(79,70,229,0.15);}
+[data-theme="light"] table.etable th{color:#64748b;}
+[data-theme="light"] table.etable tr:hover td{background:rgba(0,0,0,0.02);}
+[data-theme="light"] .einput{background:#f8fafc;border-color:rgba(0,0,0,0.1);color:#1e293b;}
+[data-theme="light"] nav button{color:#94a3b8;}
+[data-theme="light"] nav button.active{color:#00b89e;border-bottom-color:#00b89e;background:rgba(0,180,155,0.06);}
+[data-theme="light"] nav button:hover:not(.active){background:rgba(0,0,0,0.04);color:#1e293b;}
+[data-theme="light"] .year-range-badge{background:rgba(0,180,155,0.07);border-color:rgba(0,180,155,0.15);}
+[data-theme="light"] .qbtn:hover{border-color:#00b89e;color:#00b89e;background:rgba(0,180,155,0.06);}
+[data-theme="light"] .logout-btn{background:rgba(220,38,38,0.07);}
+[data-theme="light"] body::before{background-image:linear-gradient(rgba(0,0,0,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.03) 1px,transparent 1px);}
+
+.toast-wrap{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px;}
+.toast{background:var(--panel2);border:1px solid var(--border);border-radius:11px;padding:11px 16px;font-size:0.76rem;font-weight:500;display:flex;align-items:center;gap:9px;min-width:240px;animation:tIn 0.28s ease;box-shadow:0 8px 28px rgba(0,0,0,0.4);}
+.toast.success{border-left:3px solid var(--green);}
+.toast.error{border-left:3px solid var(--red);}
+@keyframes tIn{from{transform:translateX(110%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@keyframes tOut{from{opacity:1;}to{transform:translateX(110%);opacity:0;}}
+.toast.out{animation:tOut 0.28s ease forwards;}
+
+/* ── LOGIN MODAL ── */
+.login-overlay{position:fixed;inset:0;z-index:9000;background:rgba(4,6,15,0.88);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.login-overlay.show{opacity:1;pointer-events:all;}
+.login-box{background:var(--panel);border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:38px 40px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,0.65);transform:translateY(18px);transition:transform 0.28s ease;}
+.login-overlay.show .login-box{transform:translateY(0);}
+.l-icon{width:58px;height:58px;border-radius:16px;margin:0 auto 20px;background:linear-gradient(135deg,var(--indigo),#a78bfa);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 28px rgba(99,102,241,0.45);}
+.l-title{font-size:1.25rem;font-weight:800;text-align:center;margin-bottom:4px;}
+.l-sub{font-size:0.72rem;color:var(--muted);text-align:center;margin-bottom:26px;}
+.l-field{margin-bottom:15px;}
+.l-label{font-size:0.67rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;display:block;}
+.l-input{width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Sora',sans-serif;font-size:0.9rem;padding:11px 14px;outline:none;transition:border-color 0.18s,box-shadow 0.18s;}
+.l-input:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,0.18);}
+.l-input.pw{padding-right:44px;}
+.pw-wrap{position:relative;}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;transition:color 0.15s;line-height:1;}
+.pw-eye:hover{color:var(--text);}
+.l-btn{width:100%;padding:12px;border-radius:10px;border:none;margin-top:8px;background:linear-gradient(135deg,var(--indigo),#7c3aed);color:#fff;font-family:'Sora',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.18s;box-shadow:0 4px 18px rgba(99,102,241,0.38);}
+.l-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(99,102,241,0.52);}
+.l-err{display:none;text-align:center;font-size:0.72rem;color:var(--red);background:rgba(239,68,68,0.09);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px 12px;margin-top:12px;}
+.l-err.show{display:block;}
+.l-hint{font-size:0.64rem;color:var(--muted2);text-align:center;margin-top:14px;line-height:1.7;}
+.l-hint code{color:var(--muted);background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;font-family:'Space Mono',monospace;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.shake{animation:shake 0.38s ease;}
+
+/* ── LOADING OVERLAY ── */
+#loadingOverlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;}
+.spinner{width:46px;height:46px;border:3px solid rgba(0,229,195,0.15);border-top-color:var(--teal);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:0.82rem;color:var(--muted);font-weight:600;}
+
+/* ── BANNERS ── */
+.top-banner{display:none;align-items:center;gap:10px;padding:9px 20px;font-size:0.74rem;font-weight:600;position:sticky;top:57px;z-index:190;}
+#offlineBanner{background:rgba(245,158,11,0.12);border-bottom:1px solid rgba(245,158,11,0.25);color:var(--yellow);}
+#configBanner{background:rgba(99,102,241,0.12);border-bottom:1px solid rgba(99,102,241,0.25);color:var(--indigo2);}
+.banner-close{margin-left:auto;cursor:pointer;opacity:0.6;font-size:16px;}
+.banner-close:hover{opacity:1;}
+
+.panduan-wrap{padding:22px 0;}
+.panduan-hero{display:flex;align-items:center;gap:16px;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:18px;flex-wrap:wrap;}
+.panduan-hero-icon{font-size:2rem;flex-shrink:0;}
+.panduan-hero-title{font-size:1rem;font-weight:800;margin-bottom:3px;}
+.panduan-hero-sub{font-size:0.7rem;color:var(--muted);}
+.panduan-search-wrap{margin-left:auto;}
+.panduan-search{background:var(--panel2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Sora',sans-serif;font-size:0.8rem;padding:9px 16px;outline:none;min-width:240px;transition:border-color 0.18s,box-shadow 0.18s;}
+.panduan-search:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,195,0.1);}
+[data-theme="light"] .panduan-search{background:#f8fafc;}
+.panduan-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.pfbtn{padding:6px 14px;border-radius:20px;font-size:0.7rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Sora',sans-serif;transition:all 0.15s;white-space:nowrap;}
+.pfbtn:hover{border-color:var(--teal);color:var(--teal);background:rgba(0,229,195,0.06);}
+.pfbtn.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+[data-theme="light"] .pfbtn.active{color:#fff;}
+.panduan-section{margin-bottom:14px;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.panduan-section-header{display:flex;align-items:center;gap:10px;padding:14px 20px;background:var(--panel);cursor:pointer;user-select:none;transition:background 0.15s;}
+.panduan-section-header:hover{background:var(--panel2);}
+.panduan-section-title{font-size:0.85rem;font-weight:700;flex:1;}
+.panduan-section-count{font-size:0.65rem;font-weight:700;padding:2px 9px;border-radius:12px;background:rgba(0,229,195,0.12);color:var(--teal);border:1px solid rgba(0,229,195,0.2);}
+.panduan-section-chevron{color:var(--muted);font-size:0.8rem;transition:transform 0.2s;}
+.panduan-section.open .panduan-section-chevron{transform:rotate(180deg);}
+.panduan-section-body{display:none;border-top:1px solid var(--border);}
+.panduan-section.open .panduan-section-body{display:block;}
+.panduan-table{width:100%;border-collapse:collapse;}
+.panduan-table th{padding:10px 16px;text-align:left;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);border-bottom:1px solid var(--border);background:var(--panel2);}
+.panduan-table td{padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:top;font-size:0.78rem;}
+.panduan-table tr:last-child td{border-bottom:none;}
+.panduan-table tr:hover td{background:rgba(255,255,255,0.015);}
+[data-theme="light"] .panduan-table tr:hover td{background:rgba(0,0,0,0.015);}
+.p-nama{font-weight:700;color:var(--text);margin-bottom:3px;}
+.p-singkatan{display:inline-block;padding:1px 8px;border-radius:12px;font-size:0.62rem;font-weight:700;background:rgba(99,102,241,0.1);color:var(--indigo2);border:1px solid rgba(99,102,241,0.2);margin-top:3px;}
+.p-satuan{display:inline-block;padding:1px 8px;border-radius:12px;font-size:0.62rem;font-weight:700;background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.18);}
+.p-desc{color:var(--muted);font-size:0.75rem;line-height:1.6;margin-top:2px;}
+.p-formula{font-family:'Space Mono',monospace;font-size:0.66rem;color:var(--teal);background:rgba(0,229,195,0.07);border:1px solid rgba(0,229,195,0.15);border-radius:6px;padding:5px 10px;margin-top:7px;display:inline-block;line-height:1.5;}
+[data-theme="light"] .p-formula{background:rgba(0,180,155,0.07);border-color:rgba(0,180,155,0.2);}
+.p-sumber{font-size:0.65rem;color:var(--muted2);margin-top:4px;}
+.panduan-empty{text-align:center;padding:50px 20px;color:var(--muted);}
+/* ── PANDUAN EDITOR ── */
+.pe-tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto;}
+.pe-tab{background:none;border:none;border-bottom:2px solid transparent;padding:10px 16px;font-family:'Sora',sans-serif;font-size:0.72rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .18s;}
+.pe-tab:hover{color:var(--text);}
+.pe-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.pe-body{padding:18px 20px;}
+.pe-card{background:var(--panel2);border:1px solid var(--border);border-radius:11px;margin-bottom:12px;overflow:hidden;}
+.pe-card-hdr{display:flex;align-items:center;gap:9px;padding:11px 14px;cursor:pointer;user-select:none;transition:background .15s;}
+.pe-card-hdr:hover{background:rgba(255,255,255,0.03);}
+[data-theme="light"] .pe-card-hdr:hover{background:rgba(0,0,0,0.03);}
+.pe-num{width:24px;height:24px;border-radius:6px;background:rgba(79,142,247,0.15);color:var(--blue);font-size:0.65rem;font-weight:800;display:grid;place-items:center;flex-shrink:0;font-family:'Space Mono',monospace;}
+.pe-card-name{font-size:0.78rem;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pe-chev{color:var(--muted);font-size:0.7rem;transition:transform .2s;flex-shrink:0;}
+.pe-card.open .pe-chev{transform:rotate(180deg);}
+.pe-card-body{display:none;padding:16px 14px;border-top:1px solid var(--border);}
+.pe-card.open .pe-card-body{display:block;}
+.pe-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.pe-field{margin-bottom:10px;}
+.pe-lbl{font-size:0.61rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;}
+.pe-inp{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Sora',sans-serif;font-size:0.79rem;padding:8px 12px;outline:none;transition:border-color .18s;resize:vertical;box-sizing:border-box;}
+.pe-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,142,247,.11);}
+[data-theme="light"] .pe-inp{background:#fff;}
+.pe-inp.mono{font-family:'Space Mono',monospace;font-size:0.73rem;}
+.pe-inp.tall{min-height:80px;}
+.pe-inp.dirty{border-color:var(--yellow)!important;}
+.pe-del{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--red);border-radius:6px;padding:3px 8px;font-size:0.64rem;cursor:pointer;font-family:'Sora',sans-serif;font-weight:600;flex-shrink:0;}
+.pe-del:hover{background:rgba(239,68,68,.2);}
+
+@media(max-width:900px){
+  .chart-grid-2,.chart-grid-3,.chart-grid-3b{grid-template-columns:1fr;}
+  .dash-main,.admin-main{padding:14px;}
+  nav,.year-bar,header{padding-left:14px;padding-right:14px;}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .admin-sidebar{display:none;}
+  .stats-bar{grid-template-columns:1fr 1fr;}
+  .login-box{margin:16px;padding:28px 20px;}
+}
+
+</style>
+<!-- Firebase SDK dimuat di head secara paralel untuk menghindari delay -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#06080f; --panel:#0d1120; --panel2:#111827;
+  --border:rgba(255,255,255,0.07); --text:#e2e8f0; --muted:#64748b;
+  --teal:#00e5c3; --indigo:#6366f1; --indigo2:#818cf8;
+}
+body.light-theme {
+  --bg:#f0f4f8; --panel:#ffffff; --panel2:#f8fafc;
+  --border:rgba(0,0,0,0.09); --text:#1e293b; --muted:#64748b;
+  --teal:#00b89e; --indigo:#4f46e5; --indigo2:#6366f1;
+}
+body.light-theme .blob1{background:rgba(0,180,155,0.08);}
+body.light-theme .blob2{background:rgba(79,70,229,0.08);}
+body.light-theme header{background:rgba(255,255,255,0.85);}
+body.light-theme body::before,body.light-theme::before{background-image:linear-gradient(rgba(0,0,0,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.03) 1px,transparent 1px);}
+body.light-theme .group-card:hover{box-shadow:0 12px 40px rgba(0,0,0,0.12);border-color:rgba(0,0,0,0.15);}
+body.light-theme .mini-kpi:hover{background:rgba(0,0,0,0.02);}
+body.light-theme .stat-item:hover{background:rgba(0,0,0,0.02);}
+body.light-theme .hero h2{background:linear-gradient(135deg,#1e293b 40%,var(--teal) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+body.light-theme .group-header{background:rgba(0,0,0,0.02);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,195,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,195,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+
+.blob{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;animation:blobFloat 8s ease-in-out infinite;}
+.blob1{width:500px;height:500px;background:rgba(0,229,195,0.06);top:-100px;left:-100px;}
+.blob2{width:400px;height:400px;background:rgba(99,102,241,0.07);bottom:-80px;right:-80px;animation-delay:3s;}
+@keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(20px,-20px) scale(1.05);}}
+
+header{position:relative;z-index:10;padding:24px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(13,17,32,0.8);backdrop-filter:blur(12px);position:sticky;top:0;}
+.logo-wrap{display:flex;align-items:center;gap:14px;}
+.logo-badge{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--teal),#4f8ef7);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 22px rgba(0,229,195,0.3);flex-shrink:0;}
+.logo-text h1{font-size:1rem;font-weight:700;}
+.logo-text p{font-size:0.63rem;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;}
+.header-badge{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:1px solid rgba(0,229,195,0.2);background:rgba(0,229,195,0.06);font-size:0.68rem;color:var(--teal);font-weight:600;font-family:'Space Mono',monospace;}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.7);}}
+
+.hero{position:relative;z-index:10;padding:48px 40px 28px;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:20px;border:1px solid rgba(99,102,241,0.3);background:rgba(99,102,241,0.08);font-size:0.68rem;font-weight:700;color:var(--indigo2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:18px;}
+.hero h2{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;line-height:1.15;margin-bottom:12px;background:linear-gradient(135deg,#fff 40%,var(--teal) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:0.9rem;color:var(--muted);line-height:1.7;max-width:580px;}
+
+.stats-bar{position:relative;z-index:10;display:flex;gap:0;margin:24px 40px;border:1px solid var(--border);border-radius:14px;background:var(--panel);overflow:hidden;}
+.stat-item{flex:1;padding:18px 20px;border-right:1px solid var(--border);transition:background 0.18s;}
+.stat-item:last-child{border-right:none;}
+.stat-item:hover{background:rgba(255,255,255,0.02);}
+.stat-num{font-size:1.6rem;font-weight:800;font-family:'Space Mono',monospace;color:var(--teal);line-height:1;margin-bottom:4px;}
+.stat-lbl{font-size:0.62rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.07em;}
+
+.section{position:relative;z-index:10;padding:0 40px 60px;}
+.section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.section-hdr-title{font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
+.section-hdr-line{flex:1;height:1px;background:var(--border);}
+
+.groups-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;align-items:start;}
+
+.group-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s,border-color 0.2s;}
+.group-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.45);border-color:rgba(255,255,255,0.15);}
+.group-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border);}
+.group-title{font-size:0.82rem;font-weight:700;}
+.group-arrow{font-size:1rem;transition:transform 0.2s;}
+.group-card:hover .group-arrow{transform:translateX(4px);}
+
+.mini-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0;}
+.mini-kpi{padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);transition:background 0.15s;}
+.mini-kpi:hover{background:rgba(255,255,255,0.03);}
+.mini-label{font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:5px;line-height:1.3;}
+.mini-value{font-size:1.1rem;font-weight:800;font-family:'Space Mono',monospace;line-height:1.1;margin-bottom:3px;}
+.mini-year{font-size:0.58rem;color:var(--muted);font-family:'Space Mono',monospace;}
+
+footer{position:relative;z-index:10;border-top:1px solid var(--border);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+footer p{font-size:0.63rem;color:var(--muted);font-family:'Space Mono',monospace;}
+.footer-badge{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:6px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.18);font-size:0.62rem;font-weight:600;color:var(--indigo2);}
+
+.fade-up{opacity:0;transform:translateY(20px);animation:fadeUp 0.5s ease forwards;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+.d1{animation-delay:0.05s;}.d2{animation-delay:0.1s;}.d3{animation-delay:0.15s;}.d4{animation-delay:0.2s;}.d5{animation-delay:0.25s;}.d6{animation-delay:0.3s;}
+
+@media(max-width:768px){
+  header,.hero,.section,footer{padding-left:16px;padding-right:16px;}
+  .stats-bar{margin-left:16px;margin-right:16px;flex-wrap:wrap;}
+  .stat-item{border-right:none;border-bottom:1px solid var(--border);}
+  .stat-item:last-child{border-bottom:none;}
+  .groups-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<header class="fade-up">
+  <div class="logo-wrap">
+    <div class="logo-badge">🏛️</div>
+    <div class="logo-text">
+      <h1>Dashboard Indikator Pembangunan</h1>
+      <p>Kota Pangkalpinang · Data 2014–2025</p>
+    </div>
+  </div>
+  <div class="header-badge"><div class="pulse-dot"></div> Data Terkini 2025</div>
+  <button id="landingThemeBtn" onclick="toggleLandingTheme()" title="Ganti tema" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--text);font-size:16px;cursor:pointer;transition:all 0.18s;flex-shrink:0;margin-left:8px;">🌙</button>
+</header>
+
+<div class="hero fade-up d1">
+  <div class="hero-eyebrow">📊 Statistik Resmi Kota Pangkalpinang</div>
+  <h2>Pantau Indikator<br>Pembangunan Kota Pangkal Pinang</h2>
+  <p>Klik kategori di bawah untuk langsung masuk ke bagian dashboard yang kamu inginkan. Data lengkap 2014–2025.</p>
+</div>
+
+<div class="stats-bar fade-up d2">
+  <div class="stat-item"><div class="stat-num">12</div><div class="stat-lbl">Tahun Data</div></div>
+  <div class="stat-item"><div class="stat-num">50+</div><div class="stat-lbl">Indikator</div></div>
+  <div class="stat-item"><div class="stat-num">6</div><div class="stat-lbl">Kategori</div></div>
+  <div class="stat-item"><div class="stat-num">16</div><div class="stat-lbl">Sektor Ekonomi</div></div>
+</div>
+
+<div class="section">
+  <div class="section-hdr fade-up d3">
+    <span class="section-hdr-title">Klik kategori untuk masuk ke dashboard</span>
+    <div class="section-hdr-line"></div>
+  </div>
+  <div class="groups-grid">
+    <div class="fade-up d3">
+    <div class="group-card" onclick="openDashboard('ekonomi')">
+      <div class="group-header" style="border-left:3px solid #00e5c3">
+        <span class="group-title" style="color:#00e5c3">📈 Ekonomi & PDRB</span>
+        <span class="group-arrow" style="color:#00e5c3">→</span>
+      </div>
+      <div class="mini-grid">
+        
+        <div class="mini-kpi">
+          <div class="mini-label">PDRB ADHK (Milyar Rp)</div>
+          <div class="mini-value" style="color:#00e5c3">10.503,91</div>
+          <div class="mini-year">2024</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">PDRB ADHB (Milyar Rp)</div>
+          <div class="mini-value" style="color:#00e5c3">18.939,59</div>
+          <div class="mini-year">2024</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Laju Pertumbuhan (%)</div>
+          <div class="mini-value" style="color:#00e5c3">-2,30</div>
+          <div class="mini-year">2024</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Inflasi Tahunan (%)</div>
+          <div class="mini-value" style="color:#00e5c3">2,58</div>
+          <div class="mini-year">2025</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="fade-up d3">
+    <div class="group-card" onclick="openDashboard('pendidikan')">
+      <div class="group-header" style="border-left:3px solid #4f8ef7">
+        <span class="group-title" style="color:#4f8ef7">🎓 Pendidikan</span>
+        <span class="group-arrow" style="color:#4f8ef7">→</span>
+      </div>
+      <div class="mini-grid">
+        
+        <div class="mini-kpi">
+          <div class="mini-label">Melek Huruf (%)</div>
+          <div class="mini-value" style="color:#4f8ef7">98,91</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Lama Sekolah (Thn)</div>
+          <div class="mini-value" style="color:#4f8ef7">10,90</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">APM SD/MI (%)</div>
+          <div class="mini-value" style="color:#4f8ef7">94,12</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">APM SMP/MTs (%)</div>
+          <div class="mini-value" style="color:#4f8ef7">83,25</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">APM SMA (%)</div>
+          <div class="mini-value" style="color:#4f8ef7">71,94</div>
+          <div class="mini-year">2025</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="fade-up d4">
+    <div class="group-card" onclick="openDashboard('demografi')">
+      <div class="group-header" style="border-left:3px solid #a855f7">
+        <span class="group-title" style="color:#a855f7">👥 Demografi</span>
+        <span class="group-arrow" style="color:#a855f7">→</span>
+      </div>
+      <div class="mini-grid">
+        
+        <div class="mini-kpi">
+          <div class="mini-label">Jumlah Penduduk (Jiwa)</div>
+          <div class="mini-value" style="color:#a855f7">233.466</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Kepadatan (Jiwa/Km²)</div>
+          <div class="mini-value" style="color:#a855f7">2.233</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Laju Pertumbuhan (%)</div>
+          <div class="mini-value" style="color:#a855f7">1,31</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Angka Ketergantungan</div>
+          <div class="mini-value" style="color:#a855f7">46,12</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Penduduk Lansia (Jiwa)</div>
+          <div class="mini-value" style="color:#a855f7">16.097</div>
+          <div class="mini-year">2025</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="fade-up d4">
+    <div class="group-card" onclick="openDashboard('ketenagakerjaan')">
+      <div class="group-header" style="border-left:3px solid #ef4444">
+        <span class="group-title" style="color:#ef4444">💼 Ketenagakerjaan</span>
+        <span class="group-arrow" style="color:#ef4444">→</span>
+      </div>
+      <div class="mini-grid">
+        
+        <div class="mini-kpi">
+          <div class="mini-label">TPAK (%)</div>
+          <div class="mini-value" style="color:#ef4444">67,10</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">TPT (%)</div>
+          <div class="mini-value" style="color:#ef4444">5,73</div>
+          <div class="mini-year">2025</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="fade-up d5">
+    <div class="group-card" onclick="openDashboard('kemiskinan')">
+      <div class="group-header" style="border-left:3px solid #fbbf24">
+        <span class="group-title" style="color:#fbbf24">📊 Kemiskinan & Sosial</span>
+        <span class="group-arrow" style="color:#fbbf24">→</span>
+      </div>
+      <div class="mini-grid">
+        
+        <div class="mini-kpi">
+          <div class="mini-label">% Penduduk Miskin (P0)</div>
+          <div class="mini-value" style="color:#fbbf24">4,50</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Garis Kemiskinan (Rp)</div>
+          <div class="mini-value" style="color:#fbbf24">956</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Indeks Kedalaman (P1)</div>
+          <div class="mini-value" style="color:#fbbf24">0,64</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Indeks Keparahan (P2)</div>
+          <div class="mini-value" style="color:#fbbf24">0,13</div>
+          <div class="mini-year">2025</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Angka Kriminalitas</div>
+          <div class="mini-value" style="color:#fbbf24">585</div>
+          <div class="mini-year">2024</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="fade-up d6">
+    <div class="group-card" onclick="openDashboard('distribusi')">
+      <div class="group-header" style="border-left:3px solid #22c55e">
+        <span class="group-title" style="color:#22c55e">🧩 Distribusi PDRB Sektoral</span>
+        <span class="group-arrow" style="color:#22c55e">→</span>
+      </div>
+      <div class="mini-grid">
+        <div class="mini-kpi"><div class="mini-label">Perdagangan (%)</div><div class="mini-value" style="color:#22c55e">25,79</div><div class="mini-year">2024</div></div>
+        <div class="mini-kpi"><div class="mini-label">Industri (%)</div><div class="mini-value" style="color:#22c55e">13,43</div><div class="mini-year">2024</div></div>
+        <div class="mini-kpi"><div class="mini-label">Konstruksi (%)</div><div class="mini-value" style="color:#22c55e">11,09</div><div class="mini-year">2024</div></div>
+        <div class="mini-kpi"><div class="mini-label">Transportasi (%)</div><div class="mini-value" style="color:#22c55e">7,51</div><div class="mini-year">2024</div></div>
+        <div class="mini-kpi"><div class="mini-label">Jasa Pendidikan (%)</div><div class="mini-value" style="color:#22c55e">6,04</div><div class="mini-year">2024</div></div>
+        <div class="mini-kpi"><div class="mini-label">Adm. Pemerintahan (%)</div><div class="mini-value" style="color:#22c55e">6,36</div><div class="mini-year">2024</div></div>
+      </div>
+      <div style="padding:6px 14px 12px;font-size:0.62rem;color:#22c55e;opacity:0.7;font-weight:600;">+10 sektor lainnya →</div>
+    </div></div>
+</div></div>
+    <div class="fade-up d5">
+    <div class="group-card" onclick="openDashboard('ipm')">
+      <div class="group-header" style="border-left:3px solid #6366f1">
+        <span class="group-title" style="color:#6366f1">🌟 IPM & Dimensi Pembentuk</span>
+        <span class="group-arrow" style="color:#6366f1">→</span>
+      </div>
+      <div class="mini-grid">
+        <div class="mini-kpi">
+          <div class="mini-label">IPM</div>
+          <div class="mini-value" style="color:#6366f1">79,80</div>
+          <div class="mini-year">2024</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">AHH (thn)</div>
+          <div class="mini-value" style="color:#6366f1">70,25</div>
+          <div class="mini-year">2024</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">HLS (thn)</div>
+          <div class="mini-value" style="color:#6366f1">14,40</div>
+          <div class="mini-year">2024</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">RLS (thn)</div>
+          <div class="mini-value" style="color:#6366f1">10,67</div>
+          <div class="mini-year">2024</div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-label">Pengeluaran/Kapita</div>
+          <div class="mini-value" style="color:#6366f1">16,12 jt</div>
+          <div class="mini-year">2024</div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<footer class="fade-up d6">
+  <p>© 2025 Pemerintah Kota Pangkalpinang · Dashboard Indikator Pembangunan</p>
+  <div class="footer-badge">📁 Data BPS 2014–2025</div>
+</footer>
+
+<!-- DASHBOARD OVERLAY -->
+<div id="dashboard-page" style="display:none; position:fixed; inset:0; z-index:9000; overflow-y:auto; background:var(--bg);">
+  <button onclick="closeDashboard()" style="position:fixed;top:14px;right:60px;z-index:9999;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;font-family:Sora,sans-serif;font-size:0.75rem;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;">✕ Tutup</button>
+  
+
+<!-- LOADING OVERLAY -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Menghubungkan ke database cloud…</div>
+</div>
+
+<!-- OFFLINE BANNER -->
+<div class="top-banner" id="offlineBanner">
+  ⚠️ Firebase tidak terhubung — data ditampilkan dari cache lokal. Perubahan tidak akan tersimpan ke cloud.
+  <span class="banner-close" onclick="this.parentElement.style.display='none'">✕</span>
+</div>
+
+<!-- CONFIG BANNER -->
+<div class="top-banner" id="configBanner">
+  🔧 Firebase belum dikonfigurasi. Buka file HTML dan isi <code style="background:rgba(255,255,255,0.1);padding:1px 6px;border-radius:4px;font-family:monospace">firebaseConfig</code> dengan config project kamu.
+  <span class="banner-close" onclick="this.parentElement.style.display='none'">✕</span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-badge">🏛️</div>
+  <div>
+    <h1>Dashboard Indikator Pembangunan</h1>
+    <p>Kota Pangkalpinang · <span id="hdrRange">2014–2025</span></p>
+  </div>
+  <div class="header-right">
+    <span class="user-badge" id="userBadge">🔐 <span id="userBadgeName"></span></span>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btnDash" onclick="switchView('dashboard')">📊 Dashboard</button>
+      <div class="mode-sep"></div>
+      <button class="mode-btn" id="btnAdmin" onclick="onAdminClick()">⚙️ Admin <span class="chg-badge" id="headerChgBadge">0</span></button>
+    </div>
+    <button class="logout-btn" id="logoutBtn" onclick="doLogout()">↩ Keluar</button>
+    <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Ganti tema">🌙</button>
+  </div>
+</header>
+
+<!-- DASHBOARD VIEW -->
+<div id="view-dashboard">
+  <div class="year-bar">
+    <span class="year-bar-label">📅 Pilih Tahun</span>
+    <div class="year-dropdown-wrap">
+      <span class="dd-icon">📅</span>
+      <select class="year-select" id="yearSelect" onchange="onYearSelect(this.value)"></select>
+      <span class="dd-arrow">▼</span>
+    </div>
+    <div class="year-range-badge">Menampilkan: <strong id="yearRangeText">—</strong></div>
+    <div class="quick-btns">
+      <button class="qbtn" onclick="quickRange(5,this)">5 Thn Terakhir</button>
+      <button class="qbtn" onclick="quickRange(3,this)">3 Thn Terakhir</button>
+      <button class="qbtn qactive" id="qbtnAll" onclick="quickAll(this)">Semua</button>
+    </div>
+  </div>
+  <nav>
+    <button class="active" onclick="showTab('ekonomi',this)">📈 Ekonomi & PDRB</button>
+    <button onclick="showTab('pendidikan',this)">🎓 Pendidikan</button>
+    <button onclick="showTab('demografi',this)">👥 Demografi</button>
+    <button onclick="showTab('ketenagakerjaan',this)">💼 Ketenagakerjaan</button>
+    <button onclick="showTab('kemiskinan',this)">📊 Kemiskinan & Sosial</button>
+    <button onclick="showTab('distribusi',this)">🧩 Distribusi PDRB Sektoral</button>
+    <button onclick="showTab('ipm',this)">🌟 IPM</button>
+    <button onclick="showTab('panduan',this)">📖 Panduan Indikator</button>
+  </nav>
+  <div class="dash-main">
+    <div class="tab-panel active" id="tab-ekonomi">
+      <div style="margin-top:14px" id="mode-ekonomi"></div>
+      <div class="kpi-grid" id="kpi-ekonomi"></div>
+      <div class="section-label">Tren PDRB & Pertumbuhan</div>
+      <div class="chart-grid chart-grid-3">
+        <div class="chart-card"><div class="chart-title">PDRB ADHK & ADHB (Milyar Rp)</div><canvas id="chartPDRB"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Laju Pertumbuhan & Inflasi (%)</div><canvas id="chartGrowth"></canvas></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-pendidikan">
+      <div style="margin-top:14px" id="mode-pendidikan"></div>
+      <div class="kpi-grid" id="kpi-pendidikan"></div>
+      <div class="section-label">Indikator Pendidikan</div>
+      <div class="chart-grid chart-grid-2">
+        <div class="chart-card"><div class="chart-title">Rata-rata Lama Sekolah & Melek Huruf</div><canvas id="chartEdu1"></canvas></div>
+        <div class="chart-card"><div class="chart-title">APM per Jenjang (%)</div><canvas id="chartAPM"></canvas></div>
+      </div>
+      <div class="chart-grid chart-grid-2">
+        <div class="chart-card"><div class="chart-title">APK per Jenjang (%)</div><canvas id="chartAPK"></canvas></div>
+        <div class="chart-card"><div class="chart-title">APS per Kelompok Umur (%)</div><canvas id="chartAPS"></canvas></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-demografi">
+      <div style="margin-top:14px" id="mode-demografi"></div>
+      <div class="kpi-grid" id="kpi-demografi"></div>
+      <div class="section-label">Tren Kependudukan</div>
+      <div class="chart-grid chart-grid-2">
+        <div class="chart-card"><div class="chart-title">Jumlah Penduduk & Usia Produktif</div><canvas id="chartPop"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Kepadatan & Laju Pertumbuhan Penduduk</div><canvas id="chartDemog"></canvas></div>
+      </div>
+      <div class="chart-grid chart-grid-3b">
+        <div class="chart-card"><div class="chart-title">Distribusi Usia (Pie)</div><div class="chart-sub">Produktif · Lansia · Lainnya</div><canvas id="chartAgePie"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Angka Ketergantungan</div><canvas id="chartDep"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Penduduk Usia Lanjut</div><canvas id="chartElderly"></canvas></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-ketenagakerjaan">
+      <div style="margin-top:14px" id="mode-ketenagakerjaan"></div>
+      <div class="kpi-grid" id="kpi-ketenagakerjaan"></div>
+      <div class="section-label">Tren Ketenagakerjaan</div>
+      <div class="chart-grid chart-grid-2">
+        <div class="chart-card"><div class="chart-title">Tingkat Pengangguran Terbuka (TPT) %</div><canvas id="chartTPT"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Tingkat Partisipasi Angkatan Kerja (TPAK) %</div><canvas id="chartTPAK"></canvas></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-kemiskinan">
+      <div style="margin-top:14px" id="mode-kemiskinan"></div>
+      <div class="kpi-grid" id="kpi-kemiskinan"></div>
+      <div class="section-label">Tren Kemiskinan & Sosial</div>
+      <div class="chart-grid chart-grid-2">
+        <div class="chart-card"><div class="chart-title">% Penduduk Miskin & Garis Kemiskinan</div><canvas id="chartPoverty"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Indeks Kedalaman (P1) & Keparahan (P2)</div><canvas id="chartPovIdx"></canvas></div>
+      </div>
+      <div class="chart-grid" style="grid-template-columns:1fr">
+        <div class="chart-card"><div class="chart-title">Angka Kriminalitas</div><canvas id="chartCrime" height="120"></canvas></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-distribusi">
+      <div style="margin-top:14px" id="mode-distribusi"></div>
+      <div class="kpi-grid" id="kpi-distribusi"></div>
+      <div class="section-label">Distribusi PDRB Sektoral</div>
+      <div class="chart-grid chart-grid-2">
+        <div class="chart-card"><div class="chart-title">Distribusi PDRB Sektoral <span id="pie-year-label"></span> (%)</div><canvas id="chartPie" height="270"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Top 5 Sektor — Tren (%)</div><canvas id="chartTop5" height="270"></canvas></div>
+      </div>
+      <div class="chart-grid" style="grid-template-columns:1fr">
+        <div class="chart-card"><div class="chart-title">Laju Pertumbuhan per Sektor <span id="bar-year-label"></span> (%)</div><canvas id="chartSectorGrowth" height="190"></canvas></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-ipm">
+      <div style="margin-top:14px" id="mode-ipm"></div>
+      <div class="kpi-grid" id="kpi-ipm"></div>
+      <div class="section-label">Tren IPM & Dimensi Pembentuk</div>
+      <div class="chart-grid chart-grid-2">
+        <div class="chart-card">
+          <div class="chart-title">Indeks Pembangunan Manusia (IPM)</div>
+          <div class="chart-sub">Tren capaian IPM Kota Pangkalpinang</div>
+          <canvas id="chartIPM"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Angka Harapan Hidup (AHH)</div>
+          <div class="chart-sub">Dimensi Kesehatan — tahun</div>
+          <canvas id="chartAHH"></canvas>
+        </div>
+      </div>
+      <div class="section-label">Dimensi Pendidikan</div>
+      <div class="chart-grid chart-grid-2">
+        <div class="chart-card">
+          <div class="chart-title">Harapan Lama Sekolah (HLS)</div>
+          <div class="chart-sub">Tahun sekolah yang diharapkan anak usia 7 tahun</div>
+          <canvas id="chartHLS"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Rata-rata Lama Sekolah (RLS)</div>
+          <div class="chart-sub">Penduduk usia ≥25 tahun</div>
+          <canvas id="chartRLS"></canvas>
+        </div>
+      </div>
+      <div class="section-label">Dimensi Standar Hidup Layak</div>
+      <div class="chart-grid" style="grid-template-columns:1fr">
+        <div class="chart-card">
+          <div class="chart-title">Pengeluaran per Kapita Disesuaikan</div>
+          <div class="chart-sub">Ribu Rp/orang/tahun — harga konstan 2012</div>
+          <canvas id="chartPengeluaran" height="110"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-panduan">
+      <div class="panduan-wrap">
+
+        <div class="panduan-hero">
+          <div class="panduan-hero-icon">📖</div>
+          <div>
+            <div class="panduan-hero-title">Panduan Indikator</div>
+            <div class="panduan-hero-sub">Penjelasan lengkap seluruh indikator pembangunan Kota Pangkalpinang</div>
+          </div>
+          <div class="panduan-search-wrap">
+            <input class="panduan-search" id="panduanSearch" type="text" placeholder="🔍  Cari indikator..." oninput="filterPanduan(this.value)">
+          </div>
+        </div>
+
+        <div class="panduan-filter-bar" id="panduanFilterBar">
+          <button class="pfbtn active" onclick="filterPanduanKat('semua',this)">Semua</button>
+          <button class="pfbtn" onclick="filterPanduanKat('ekonomi',this)">📈 Ekonomi</button>
+          <button class="pfbtn" onclick="filterPanduanKat('pendidikan',this)">🎓 Pendidikan</button>
+          <button class="pfbtn" onclick="filterPanduanKat('demografi',this)">👥 Demografi</button>
+          <button class="pfbtn" onclick="filterPanduanKat('ketenagakerjaan',this)">💼 Ketenagakerjaan</button>
+          <button class="pfbtn" onclick="filterPanduanKat('kemiskinan',this)">📊 Kemiskinan</button>
+          <button class="pfbtn" onclick="filterPanduanKat('distribusi',this)">🧩 Distribusi</button>
+          <button class="pfbtn" onclick="filterPanduanKat('ipm',this)">🌟 IPM</button>
+        </div>
+
+        <div id="panduanList"></div>
+        <div class="panduan-empty" id="panduanEmpty" style="display:none">
+          <div style="font-size:2.5rem;margin-bottom:10px">🔍</div>
+          <div style="font-weight:700;margin-bottom:4px">Tidak ditemukan</div>
+          <div style="font-size:0.76rem;color:var(--muted)">Coba kata kunci lain</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN VIEW -->
+<div id="view-admin">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-lbl">Data Indikator</div>
+        <button class="snav-item active" onclick="swSec('ekonomi',this)"><span class="snav-dot"></span>Ekonomi & PDRB</button>
+        <button class="snav-item" onclick="swSec('pendidikan',this)"><span class="snav-dot"></span>Pendidikan</button>
+        <button class="snav-item" onclick="swSec('demografi',this)"><span class="snav-dot"></span>Demografi</button>
+        <button class="snav-item" onclick="swSec('ketenagakerjaan',this)"><span class="snav-dot"></span>Ketenagakerjaan</button>
+        <button class="snav-item" onclick="swSec('kemiskinan',this)"><span class="snav-dot"></span>Kemiskinan & Sosial</button>
+        <button class="snav-item" onclick="swSec('distribusi',this)"><span class="snav-dot"></span>Distribusi PDRB</button>
+        <button class="snav-item" onclick="swSec('ipm',this)"><span class="snav-dot"></span>IPM & Dimensi</button>
+        <button class="snav-item" onclick="swSec('laju',this)"><span class="snav-dot"></span>Laju Sektoral</button>
+        <button class="snav-item" onclick="swSec('panduan-edit',this)" style="color:var(--blue);"><span class="snav-dot" style="background:var(--blue)"></span>Edit Penjelasan Indikator</button>
+        <div class="sidebar-lbl" style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px;">Pengaturan</div>
+        <button class="snav-item" onclick="swSec('tahun',this)" style="color:var(--teal);"><span class="snav-dot" style="background:var(--teal)"></span>Kelola Tahun</button>
+        <button class="snav-item" onclick="swSec('akun',this)" style="color:var(--yellow);"><span class="snav-dot" style="background:var(--yellow)"></span>Pengaturan Akun</button>
+      </div>
+    </aside>
+    <div class="admin-main">
+      <div class="admin-topbar">
+        <div>
+          <h2>Editor Database <span class="chg-badge" id="adminChgBadge" style="display:none">0</span></h2>
+          <p>Edit, simpan, dan sinkronisasi data indikator pembangunan kota</p>
+        </div>
+        <div style="display:flex;gap:9px;">
+          <button class="btn btn-ghost" onclick="resetData()">↺ Reset Default</button>
+          <button class="btn btn-success" onclick="saveAllData()">💾 Simpan Semua</button>
+        </div>
+      </div>
+      <div class="stats-bar">
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(99,102,241,0.15);">📋</div><div><div class="stat-val" id="statIndicators">0</div><div class="stat-lbl">Total Indikator</div></div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(16,185,129,0.15);">📅</div><div><div class="stat-val" id="statYearRange" style="font-size:0.9rem">—</div><div class="stat-lbl">Rentang Tahun</div></div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(245,158,11,0.15);">✏️</div><div><div class="stat-val" id="statChanges">0</div><div class="stat-lbl">Belum Disimpan</div></div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(6,182,212,0.15);">🕐</div><div><div class="stat-val" id="statLastSave" style="font-size:1rem">—</div><div class="stat-lbl">Terakhir Disimpan</div></div></div>
+      </div>
+      <!-- data editor sections -->
+      <div class="asec active" id="asec-ekonomi"><div class="apanel"><div class="apanel-header"><div><div class="apanel-title">📈 Ekonomi & PDRB</div><div class="apanel-sub">PDRB ADHK, ADHB, Pertumbuhan, Inflasi</div></div><span class="cat-tag">4 Indikator</span></div><div class="apanel-body"><div id="atable-ekonomi"></div></div></div></div>
+      <div class="asec" id="asec-pendidikan"><div class="apanel"><div class="apanel-header"><div><div class="apanel-title">🎓 Pendidikan</div><div class="apanel-sub">APM, APK, APS, Melek Huruf, Lama Sekolah</div></div><span class="cat-tag">11 Indikator</span></div><div class="apanel-body"><div id="atable-pendidikan"></div></div></div></div>
+      <div class="asec" id="asec-demografi"><div class="apanel"><div class="apanel-header"><div><div class="apanel-title">👥 Demografi</div><div class="apanel-sub">Penduduk, Kepadatan, Ketergantungan, Lansia</div></div><span class="cat-tag">6 Indikator</span></div><div class="apanel-body"><div id="atable-demografi"></div></div></div></div>
+      <div class="asec" id="asec-ketenagakerjaan"><div class="apanel"><div class="apanel-header"><div><div class="apanel-title">💼 Ketenagakerjaan</div><div class="apanel-sub">TPT dan TPAK</div></div><span class="cat-tag">2 Indikator</span></div><div class="apanel-body"><div id="atable-ketenagakerjaan"></div></div></div></div>
+      <div class="asec" id="asec-kemiskinan"><div class="apanel"><div class="apanel-header"><div><div class="apanel-title">📊 Kemiskinan & Sosial</div><div class="apanel-sub">Garis Kemiskinan, P0, P1, P2, Kriminalitas</div></div><span class="cat-tag">5 Indikator</span></div><div class="apanel-body"><div id="atable-kemiskinan"></div></div></div></div>
+      <div class="asec" id="asec-distribusi"><div class="apanel"><div class="apanel-header"><div><div class="apanel-title">🧩 Distribusi PDRB ADHB (%)</div><div class="apanel-sub">Kontribusi sektoral terhadap PDRB</div></div><span class="cat-tag">16 Sektor</span></div><div class="apanel-body"><div id="atable-distribusi"></div></div></div></div>
+      <div class="asec" id="asec-ipm">
+        <div class="apanel">
+          <div class="apanel-header">
+            <div><div class="apanel-title">🌟 IPM & Dimensi Pembentuk</div><div class="apanel-sub">AHH, HLS, RLS, Pengeluaran per Kapita</div></div>
+            <span class="cat-tag">5 Indikator</span>
+          </div>
+          <div class="apanel-body" id="atable-ipm"></div>
+        </div>
+      </div>
+      <div class="asec" id="asec-panduan-edit"><div class="apanel"><div class="apanel-header"><div><div class="apanel-title">📖 Edit Penjelasan Indikator</div><div class="apanel-sub">Edit nama, deskripsi, formula, dan sumber setiap indikator di tab Panduan</div></div><div style="display:flex;gap:8px;align-items:center;"><span class="cat-tag" id="peCountTag">—</span><button class="btn btn-success" onclick="savePanduanEdit()" style="font-size:0.71rem;padding:5px 13px;">💾 Simpan</button></div></div><div class="apanel-body" style="padding:0;"><div class="pe-tabs" id="peTabs"></div><div class="pe-body" id="peBody"></div></div></div></div>
+      <div class="asec" id="asec-laju"><div class="apanel"><div class="apanel-header"><div><div class="apanel-title">⚡ Laju Pertumbuhan PDRB ADHK (%)</div><div class="apanel-sub">Laju pertumbuhan per sektor ekonomi</div></div><span class="cat-tag">16 Sektor</span></div><div class="apanel-body"><div id="atable-laju"></div></div></div></div>
+      <!-- kelola tahun -->
+      <div class="asec" id="asec-tahun">
+        <div class="apanel">
+          <div class="apanel-header"><div><div class="apanel-title">📅 Kelola Tahun Data</div><div class="apanel-sub">Tambah atau hapus tahun — tabel & grafik otomatis menyesuaikan</div></div><span class="cat-tag" id="yearCountTag">0 Tahun</span></div>
+          <div class="apanel-body">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px;background:rgba(0,229,195,0.05);border:1px solid rgba(0,229,195,0.15);border-radius:12px;margin-bottom:20px;">
+              <span style="font-size:1.3rem">➕</span>
+              <div><div style="font-size:0.78rem;font-weight:700;color:var(--teal);margin-bottom:2px;">Tambah Tahun Baru</div><div style="font-size:0.65rem;color:var(--muted);">Kolom baru ditambahkan ke semua tabel dengan nilai kosong</div></div>
+              <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+                <input id="newYearInput" type="number" min="1900" max="2200" placeholder="cth. 2026"
+                  style="background:var(--panel2);border:1px solid rgba(0,229,195,0.35);border-radius:9px;color:var(--teal);font-family:'Space Mono',monospace;font-size:0.85rem;font-weight:700;padding:8px 14px;width:130px;outline:none;text-align:center;"
+                  onkeydown="if(event.key==='Enter') addYear()">
+                <button class="btn btn-success" onclick="addYear()">+ Tambah</button>
+              </div>
+            </div>
+            <div style="margin-bottom:10px;font-size:0.64rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;">Tahun yang Ada</div>
+            <div id="yearChipList" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+          </div>
+        </div>
+      </div>
+      <!-- pengaturan akun -->
+      <div class="asec" id="asec-akun">
+        <div class="apanel">
+          <div class="apanel-header"><div><div class="apanel-title">🔑 Pengaturan Akun Admin</div><div class="apanel-sub">Ubah username dan password untuk login admin</div></div></div>
+          <div class="apanel-body">
+            <div style="max-width:420px;">
+              <div style="padding:13px 16px;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:10px;font-size:0.72rem;color:var(--yellow);margin-bottom:22px;">⚠️ Catat kredensial baru sebelum menyimpan. Jika lupa, hapus localStorage browser untuk kembali ke default.</div>
+              <div class="l-field"><label class="l-label">Username Baru</label><input class="l-input" id="newAdminUser" type="text" placeholder="Masukkan username baru" autocomplete="off"></div>
+              <div class="l-field"><label class="l-label">Password Baru</label><div class="pw-wrap"><input class="l-input pw" id="newAdminPass" type="password" placeholder="Minimal 6 karakter" autocomplete="new-password"><button class="pw-eye" onclick="togglePw('newAdminPass',this)" tabindex="-1">👁</button></div></div>
+              <div class="l-field"><label class="l-label">Konfirmasi Password</label><div class="pw-wrap"><input class="l-input pw" id="confirmAdminPass" type="password" placeholder="Ulangi password baru" autocomplete="new-password" onkeydown="if(event.key==='Enter') saveNewCreds()"><button class="pw-eye" onclick="togglePw('confirmAdminPass',this)" tabindex="-1">👁</button></div></div>
+              <button class="btn btn-primary" onclick="saveNewCreds()" style="width:100%;padding:12px;font-size:0.85rem;margin-top:4px;">🔑 Simpan Kredensial Baru</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box" id="loginBox">
+    <div class="l-icon">🔐</div>
+    <div class="l-title">Admin Login</div>
+    <div class="l-sub">Masukkan kredensial untuk mengakses panel admin</div>
+    <div class="l-field">
+      <label class="l-label">Username</label>
+      <input class="l-input" id="loginUser" type="text" placeholder="Username" autocomplete="username"
+        onkeydown="if(event.key==='Enter') document.getElementById('loginPass').focus()">
+    </div>
+    <div class="l-field">
+      <label class="l-label">Password</label>
+      <div class="pw-wrap">
+        <input class="l-input pw" id="loginPass" type="password" placeholder="Password" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') doLogin()">
+        <button class="pw-eye" onclick="togglePw('loginPass',this)" tabindex="-1">👁</button>
+      </div>
+    </div>
+    <button class="l-btn" onclick="doLogin()">Masuk ke Admin Panel</button>
+    <div class="l-err" id="loginErr">❌ Username atau password salah. Silakan coba lagi.</div>
+    <div class="l-hint">Default: username <code>admin</code> · password <code>admin123</code><br>Dapat diubah di menu Pengaturan Akun setelah login.</div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<div id="confirmModal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(4,6,15,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;"><div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:28px 30px;width:100%;max-width:370px;margin:16px;box-shadow:0 24px 60px rgba(0,0,0,0.5);"><div id="cmIcon" style="font-size:2rem;text-align:center;margin-bottom:12px;"></div><div id="cmMsg" style="font-size:0.88rem;font-weight:700;text-align:center;margin-bottom:6px;color:var(--text);"></div><div id="cmSub" style="font-size:0.72rem;color:var(--muted);text-align:center;margin-bottom:22px;line-height:1.6;"></div><div style="display:flex;gap:10px;"><button style="flex:1;padding:10px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:'Sora',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;" onclick="resolveConfirm(false)">Batal</button><button id="cmOk" style="flex:1;padding:10px;border-radius:9px;border:none;color:#fff;font-family:'Sora',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;" onclick="resolveConfirm(true)">Ya</button></div></div></div>
+
+<script>
+// ══════════════════════════════════════
+// DATA DEFINITIONS
+// ══════════════════════════════════════
+const DEFAULT_YEARS=[2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025];
+let YEARS=[...DEFAULT_YEARS];
+
+const SCHEMA={
+  ekonomi:{fields:[{key:'pdrb_adhk',label:'PDRB ADHK',unit:'Milyar Rp',desc:'Atas Dasar Harga Konstan'},{key:'pdrb_adhb',label:'PDRB ADHB',unit:'Milyar Rp',desc:'Atas Dasar Harga Berlaku'},{key:'pertumbuhan',label:'Laju Pertumbuhan Ekonomi',unit:'%',desc:'Persentase pertumbuhan tahunan'},{key:'inflasi',label:'Laju Inflasi Tahunan',unit:'%',desc:'Tingkat inflasi tahunan'}]},
+  pendidikan:{fields:[{key:'melek_huruf',label:'Angka Melek Huruf',unit:'%',desc:'Penduduk usia 15+ yang melek huruf'},{key:'lama_sekolah',label:'Rata-rata Lama Sekolah',unit:'Tahun',desc:''},{key:'apm_sd',label:'APM SD/MI',unit:'%',desc:'Angka Partisipasi Murni'},{key:'apm_smp',label:'APM SMP/MTs',unit:'%',desc:''},{key:'apm_sma',label:'APM SMA/SMK/MA',unit:'%',desc:''},{key:'apk_sd',label:'APK SD/MI',unit:'%',desc:'Angka Partisipasi Kasar'},{key:'apk_smp',label:'APK SMP/MTs',unit:'%',desc:''},{key:'apk_sma',label:'APK SMA/SMK/MA',unit:'%',desc:''},{key:'aps_712',label:'APS 7–12 Tahun',unit:'%',desc:'Angka Partisipasi Sekolah'},{key:'aps_1315',label:'APS 13–15 Tahun',unit:'%',desc:''},{key:'aps_1618',label:'APS 16–18 Tahun',unit:'%',desc:''}]},
+  demografi:{fields:[{key:'laju_penduduk',label:'Laju Pertumbuhan Penduduk',unit:'%',desc:''},{key:'kepadatan',label:'Kepadatan Penduduk',unit:'jiwa/km²',desc:''},{key:'jumlah_penduduk',label:'Jumlah Penduduk',unit:'jiwa',desc:''},{key:'usia_produktif',label:'Penduduk Usia Produktif',unit:'jiwa',desc:'Usia 15–64 tahun'},{key:'ketergantungan',label:'Angka Ketergantungan',unit:'',desc:''},{key:'lansia',label:'Penduduk Usia Lanjut',unit:'jiwa',desc:'Usia 60+ tahun'}]},
+  ketenagakerjaan:{fields:[{key:'tpt',label:'Tingkat Pengangguran Terbuka (TPT)',unit:'%',desc:''},{key:'tpak',label:'Tingkat Partisipasi Angkatan Kerja (TPAK)',unit:'%',desc:''}]},
+  kemiskinan:{fields:[{key:'garis_kemiskinan',label:'Garis Kemiskinan',unit:'Rp',desc:'Per kapita per bulan'},{key:'p0',label:'Persentase Penduduk Miskin (P0)',unit:'%',desc:''},{key:'p1',label:'Indeks Kedalaman Kemiskinan (P1)',unit:'',desc:''},{key:'p2',label:'Indeks Keparahan Kemiskinan (P2)',unit:'',desc:''},{key:'kriminalitas',label:'Angka Kriminalitas',unit:'kasus',desc:''}]},
+  distribusi:{fields:[{key:'pertanian',label:'Pertanian, Kehutanan, dan Perikanan',unit:'%',desc:''},{key:'industri',label:'Industri Pengolahan',unit:'%',desc:''},{key:'listrik',label:'Pengadaan Listrik dan Gas',unit:'%',desc:''},{key:'air',label:'Pengadaan Air, Pengelolaan Sampah',unit:'%',desc:''},{key:'konstruksi',label:'Konstruksi',unit:'%',desc:''},{key:'perdagangan',label:'Perdagangan Besar dan Eceran',unit:'%',desc:''},{key:'transportasi',label:'Transportasi dan Pergudangan',unit:'%',desc:''},{key:'akomodasi',label:'Akomodasi dan Makan Minum',unit:'%',desc:''},{key:'infokom',label:'Informasi dan Komunikasi',unit:'%',desc:''},{key:'keuangan',label:'Jasa Keuangan dan Asuransi',unit:'%',desc:''},{key:'realestate',label:'Real Estate',unit:'%',desc:''},{key:'jasa_persh',label:'Jasa Perusahaan',unit:'%',desc:''},{key:'adm_pemerint',label:'Administrasi Pemerintahan & Jaminan Sosial',unit:'%',desc:''},{key:'jasa_pend',label:'Jasa Pendidikan',unit:'%',desc:''},{key:'jasa_kes',label:'Jasa Kesehatan dan Kegiatan Sosial',unit:'%',desc:''},{key:'jasa_lain',label:'Jasa Lainnya',unit:'%',desc:''}]},
+  ipm:{fields:[
+    {key:'ipm',label:'Indeks Pembangunan Manusia (IPM)',unit:'Indeks',desc:'Indeks komposit pembangunan manusia'},
+    {key:'ahh',label:'Angka Harapan Hidup saat Lahir (AHH)',unit:'Tahun',desc:'Dimensi kesehatan'},
+    {key:'hls',label:'Harapan Lama Sekolah (HLS)',unit:'Tahun',desc:'Dimensi pendidikan'},
+    {key:'rls',label:'Rata-rata Lama Sekolah (RLS)',unit:'Tahun',desc:'Dimensi pendidikan'},
+    {key:'pengeluaran',label:'Pengeluaran per Kapita Disesuaikan',unit:'Ribu Rp/tahun',desc:'Dimensi standar hidup layak'}
+  ]},
+  laju:{fields:[{key:'pertanian',label:'Pertanian, Kehutanan, dan Perikanan',unit:'%',desc:''},{key:'industri',label:'Industri Pengolahan',unit:'%',desc:''},{key:'listrik',label:'Pengadaan Listrik dan Gas',unit:'%',desc:''},{key:'air',label:'Pengadaan Air, Pengelolaan Sampah',unit:'%',desc:''},{key:'konstruksi',label:'Konstruksi',unit:'%',desc:''},{key:'perdagangan',label:'Perdagangan Besar dan Eceran',unit:'%',desc:''},{key:'transportasi',label:'Transportasi dan Pergudangan',unit:'%',desc:''},{key:'akomodasi',label:'Akomodasi dan Makan Minum',unit:'%',desc:''},{key:'infokom',label:'Informasi dan Komunikasi',unit:'%',desc:''},{key:'keuangan',label:'Jasa Keuangan dan Asuransi',unit:'%',desc:''},{key:'realestate',label:'Real Estate',unit:'%',desc:''},{key:'jasa_persh',label:'Jasa Perusahaan',unit:'%',desc:''},{key:'adm_pemerint',label:'Administrasi Pemerintahan & Jaminan Sosial',unit:'%',desc:''},{key:'jasa_pend',label:'Jasa Pendidikan',unit:'%',desc:''},{key:'jasa_kes',label:'Jasa Kesehatan dan Kegiatan Sosial',unit:'%',desc:''},{key:'jasa_lain',label:'Jasa Lainnya',unit:'%',desc:''}]},
+};
+
+const DD={
+  ekonomi:{pdrb_adhk:[7247.5,7555.02,7945.99,8358.48,8782.79,9069.28,8797.13,9611.44,10208.03,10750.81,10503.91,null],pdrb_adhb:[9359.68,10234.63,11116.49,12108.57,12955.3,13648.93,13454.65,15375.99,17277.43,18811.53,18939.59,null],pertumbuhan:[4.27,4.24,5.17,5.19,5.08,3.26,-3.0,9.26,6.21,5.32,-2.3,null],inflasi:[6.81,4.66,7.78,2.66,3.45,2.31,0.52,3.6,6.07,2.01,0.76,2.58]},
+  pendidikan:{melek_huruf:[99.26,98.63,99.41,98.31,98.11,98.0,98.79,98.58,99.09,99.38,98.74,98.91],lama_sekolah:[9.63,9.75,9.76,9.77,9.78,9.80,9.92,10.13,10.27,10.50,10.67,10.90],apm_sd:[97.53,95.40,97.75,99.33,99.18,99.56,99.55,99.55,96.90,96.87,96.46,94.12],apm_smp:[75.14,66.34,72.99,70.34,75.13,75.25,75.71,75.19,76.65,78.71,80.62,83.25],apm_sma:[67.65,67.54,67.29,65.62,68.68,69.13,68.94,70.46,70.42,69.74,66.70,71.94],apk_sd:[111.73,110.16,109.63,108.47,109.79,108.80,108.02,106.95,106.37,105.35,101.70,102.70],apk_smp:[83.59,83.88,80.40,76.22,80.94,79.92,86.80,85.15,93.45,92.37,93.04,105.15],apk_sma:[91.57,102.39,92.46,92.29,95.75,99.92,99.44,97.19,97.86,92.78,89.32,88.02],aps_712:[99.64,100.00,98.50,100.00,99.99,99.93,99.99,99.94,99.64,99.59,99.77,99.19],aps_1315:[96.03,96.12,94.81,96.09,95.43,95.56,96.34,96.08,92.88,93.15,94.53,95.02],aps_1618:[77.27,79.67,83.00,76.53,75.62,77.46,77.73,77.25,82.42,80.76,77.34,87.42]},
+  demografi:{laju_penduduk:[2.17,2.19,2.10,2.03,2.02,2.02,1.96,1.51,1.46,1.41,1.37,1.31],kepadatan:[1621,1657,1692,1726,1761,1819,2082,2113,2144,2175,2204,2233],jumlah_penduduk:[null,null,null,null,null,null,217650,220932,224165,227336,230441,233466],usia_produktif:[null,null,null,null,null,null,150453,152365,154296,156209,158045,159779],ketergantungan:[null,null,null,null,null,null,44.66,45.0,45.28,45.53,45.81,46.12],lansia:[null,null,null,null,null,null,11704,12543,13412,14306,15204,16097]},
+  ketenagakerjaan:{tpt:[8.84,10.64,null,5.80,4.70,4.97,6.93,6.81,5.90,5.76,5.98,5.73],tpak:[64.90,67.41,null,63.42,63.64,68.35,62.37,65.16,65.78,66.55,66.99,67.10]},
+  kemiskinan:{garis_kemiskinan:[509246,527668,604011,654044,700949,748487,795653,808839,858840,894224,925522,956990],p0:[4.04,4.97,5.02,4.80,4.95,4.25,4.36,4.76,4.55,4.27,4.04,4.50],p1:[0.42,0.47,0.70,0.57,0.49,0.59,0.59,0.57,0.79,0.62,0.68,0.64],p2:[0.08,0.07,0.16,0.11,0.11,0.10,0.12,0.13,0.21,0.17,0.19,0.13],kriminalitas:[null,null,null,457,346,408,419,399,681,399,585,null]},
+  distribusi:{pertanian:[4.99,4.99,4.99,4.62,4.95,5.0,5.53,5.31,4.91,4.79,4.95,null],industri:[20.89,19.05,17.85,17.23,16.08,13.36,12.82,17.13,18.32,17.36,13.43,null],listrik:[0.06,0.06,0.07,0.08,0.08,0.1,0.11,0.1,0.08,0.08,0.08,null],air:[0.03,0.03,0.03,0.03,0.03,0.03,0.03,0.03,0.03,0.03,0.03,null],konstruksi:[10.71,10.72,10.78,11.01,11.22,12.13,12.17,11.47,10.60,10.98,11.09,null],perdagangan:[25.64,26.39,27.01,27.54,27.22,26.88,25.99,24.60,25.75,25.32,25.79,null],transportasi:[5.92,6.22,6.16,6.29,6.28,6.55,6.28,6.20,6.52,7.03,7.51,null],akomodasi:[3.35,3.41,3.46,3.45,3.45,3.88,4.11,4.17,4.30,4.41,4.70,null],infokom:[2.87,2.81,2.84,2.87,3.07,3.47,4.14,3.97,3.96,4.23,4.66,null],keuangan:[4.61,4.54,4.65,4.56,4.83,4.91,4.65,4.44,4.46,4.68,4.74,null],realestate:[5.34,5.36,5.28,5.29,5.50,5.45,5.82,5.47,5.32,5.24,5.58,null],jasa_persh:[0.52,0.52,0.49,0.50,0.52,0.53,0.48,0.47,0.48,0.50,0.54,null],adm_pemerint:[6.73,6.97,7.07,7.12,7.19,7.54,7.42,6.82,6.03,5.80,6.36,null],jasa_pend:[4.77,5.23,5.54,5.52,5.63,5.91,6.14,5.61,5.20,5.36,6.04,null],jasa_kes:[1.88,1.95,1.91,1.93,1.91,2.05,2.14,2.22,2.05,2.08,2.14,null],jasa_lain:[1.69,1.75,1.86,1.97,2.02,2.20,2.17,1.99,1.99,2.11,2.36,null]},
+  ipm:{
+    ipm:      [74.04,74.89,75.53,76.06,76.62,77.22,77.38,77.97,78.65,79.25,79.80,null],
+    ahh:      [68.53,68.72,68.91,69.10,69.28,69.47,69.65,69.76,69.91,70.10,70.25,null],
+    hls:      [13.39,13.54,13.67,13.78,13.84,13.93,14.02,14.11,14.20,14.30,14.40,null],
+    rls:      [9.63,9.75,9.76,9.77,9.78,9.80,9.92,10.13,10.27,10.50,10.67,null],
+    pengeluaran:[11585,12004,12485,12879,13312,13780,13592,14101,14832,15489,16120,null]
+  },
+  laju:{pertanian:[5.06,3.67,3.13,-5.0,8.83,3.20,6.24,2.90,-0.59,1.60,3.18,null],industri:[0.55,0.94,3.95,3.47,-3.45,-10.35,-4.34,29.40,9.31,1.07,-30.27,null],listrik:[25.60,9.25,13.74,4.88,6.46,31.21,0.84,2.43,-3.84,3.59,3.72,null],air:[3.78,5.01,5.07,7.61,-5.45,2.03,5.72,1.69,4.24,0.32,3.93,null],konstruksi:[4.95,3.43,6.86,6.71,6.34,9.98,-1.53,4.16,-2.01,9.23,-0.19,null],perdagangan:[3.86,4.12,4.58,6.62,4.78,2.27,-6.31,4.68,9.36,1.52,1.13,null],transportasi:[5.40,6.21,5.08,8.54,7.28,4.92,-9.14,9.02,10.76,7.09,4.61,null],akomodasi:[6.09,7.59,4.74,6.30,4.33,12.54,-4.59,10.40,11.16,10.76,4.16,null],infokom:[6.99,6.58,9.14,9.11,14.89,17.58,17.84,9.04,10.91,14.97,10.52,null],keuangan:[3.88,3.14,7.54,2.59,9.96,5.26,-6.72,4.19,4.24,12.34,1.33,null],realestate:[8.22,4.11,3.36,4.70,9.41,2.20,3.90,6.38,5.78,4.68,4.43,null],jasa_persh:[6.94,3.30,0.08,2.08,6.94,2.20,-16.95,6.17,10.31,9.10,7.82,null],adm_pemerint:[6.86,8.57,6.48,4.98,9.88,9.86,-6.76,4.40,-1.51,4.51,10.39,null],jasa_pend:[7.82,9.04,7.67,4.57,9.50,8.72,-0.97,2.20,2.37,10.53,11.20,null],jasa_kes:[6.53,8.73,2.65,8.08,4.65,10.69,1.05,15.0,2.02,8.42,2.03,null],jasa_lain:[7.85,7.06,9.99,9.46,8.09,11.05,-6.04,3.25,8.25,11.23,9.02,null]},
+};
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let db={}, selectedYears=[...YEARS], charts={}, changeCount=0, isLoggedIn=false, loggedUser='';
+
+// ══════════════════════════════════════
+// DB
+// ══════════════════════════════════════
+// ── FIREBASE CONFIG ──────────────────────────────────────
+// Ganti nilai di bawah ini dengan config Firebase kamu!
+// Cara dapat config: Firebase Console → Project Settings → Your Apps → SDK setup
+const firebaseConfig = {
+  apiKey: "AIzaSyBkUp4034wfxbe9QgaHwUbGxul7IsrsSfE",
+  authDomain: "dashboard-1971.firebaseapp.com",
+  projectId: "dashboard-1971",
+  storageBucket: "dashboard-1971.firebasestorage.app",
+  messagingSenderId: "160071817166",
+  appId: "1:160071817166:web:959f9779d32be1fed73d9f"
+};
+// ─────────────────────────────────────────────────────────
+
+// Firebase SDK (dimuat di <head> secara paralel)
+let firestoreDb = null;
+let firebaseReady = false;
+
+async function initFirebase(){
+  if(firebaseReady) return; // sudah terinisialisasi
+  try {
+    if(firebaseConfig.apiKey === 'GANTI_API_KEY'){
+      showConfigBanner();
+      return;
+    }
+    if(typeof firebase === 'undefined'){
+      throw new Error('Firebase SDK tidak tersedia');
+    }
+    // Cek apakah Firebase sudah diinisialisasi sebelumnya
+    if(!firebase.apps.length){
+      firebase.initializeApp(firebaseConfig);
+    }
+    firestoreDb = firebase.firestore();
+    firebaseReady = true;
+    console.log('✅ Firebase terhubung');
+  } catch(e){
+    console.warn('Firebase gagal:', e);
+    showOfflineBanner();
+  }
+}
+
+async function loadDB(){
+  // Tampilkan data dari cache/default DULU agar UI langsung responsif
+  loadFromCache();
+  showLoading(false);
+
+  // Jika Firebase tidak siap, selesai di sini
+  if(!firebaseReady){ return; }
+
+  // Sync Firebase di background tanpa memblokir UI
+  syncFromFirebase();
+}
+
+async function syncFromFirebase(){
+  const TIMEOUT_MS = 5000; // batas 5 detik
+
+  try {
+    const timeoutPromise = new Promise((_,reject) =>
+      setTimeout(() => reject(new Error('Timeout: Firestore tidak merespons dalam 5 detik')), TIMEOUT_MS)
+    );
+
+    const fetchPromise = Promise.all([
+      firestoreDb.collection('pangkal_data').get(),
+      firestoreDb.collection('pangkal_meta').doc('years').get()
+    ]);
+
+    const [secSnap, ySnap] = await Promise.race([fetchPromise, timeoutPromise]);
+
+    if(secSnap.empty){
+      // First time → seed with default data
+      await seedFirestore();
+    } else {
+      db = {};
+      secSnap.forEach(doc => { db[doc.id] = doc.data(); });
+    }
+
+    YEARS = ySnap.exists ? ySnap.data().list : [...DEFAULT_YEARS];
+    selectedYears = [...YEARS];
+
+    // Cache locally & refresh chart
+    cacheLocally();
+    buildYearDropdown();
+    updateYearUI();
+    renderAllCharts();
+    console.log('✅ Data berhasil disinkron dari Firestore');
+  } catch(e){
+    console.warn('Gagal sync dari Firestore:', e.message);
+    showOfflineBanner();
+  }
+}
+
+function loadFromCache(){
+  const s=localStorage.getItem('pangkal_db');
+  db=s?JSON.parse(s):JSON.parse(JSON.stringify(DD));
+  const sy=localStorage.getItem('pangkal_years');
+  YEARS=sy?JSON.parse(sy):[...DEFAULT_YEARS];
+  selectedYears=[...YEARS];
+}
+
+function cacheLocally(){
+  localStorage.setItem('pangkal_db',JSON.stringify(db));
+  localStorage.setItem('pangkal_years',JSON.stringify(YEARS));
+}
+
+async function saveDB(){
+  if(!firebaseReady){
+    // Offline fallback → save to localStorage only
+    cacheLocally();
+    const t=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('statLastSave').textContent=t+' (lokal)';
+    changeCount=0; updateChgBadge(); rebuildAll();
+    toast('Tersimpan lokal (Firebase tidak terhubung)','success');
+    return;
+  }
+
+  showSaving(true);
+  try {
+    const batch = firestoreDb.batch();
+
+    // Save each section
+    Object.keys(db).forEach(sec => {
+      const ref = firestoreDb.collection('pangkal_data').doc(sec);
+      batch.set(ref, db[sec]);
+    });
+
+    // Save years
+    const yRef = firestoreDb.collection('pangkal_meta').doc('years');
+    batch.set(yRef, { list: YEARS });
+
+    await batch.commit();
+    cacheLocally();
+
+    const t=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('statLastSave').textContent=t;
+    changeCount=0; updateChgBadge(); rebuildAll();
+    toast('Data tersimpan ke cloud ☁️','success');
+  } catch(e){
+    console.error('Gagal simpan ke Firestore:', e);
+    toast('Gagal simpan ke cloud. Coba lagi.','error');
+  }
+  showSaving(false);
+}
+
+async function seedFirestore(){
+  try {
+    const batch = firestoreDb.batch();
+    Object.keys(DD).forEach(sec=>{
+      const ref = firestoreDb.collection('pangkal_data').doc(sec);
+      batch.set(ref, DD[sec]);
+    });
+    const yRef = firestoreDb.collection('pangkal_meta').doc('years');
+    batch.set(yRef, { list: DEFAULT_YEARS });
+    await batch.commit();
+    console.log('✅ Data default berhasil disimpan ke Firestore');
+  } catch(e){ console.warn('Gagal seed:', e); }
+}
+
+function saveAllData(){ saveDB(); }
+
+async function resetData(){
+  _confirm('Reset semua data?','Semua data kembali ke nilai default termasuk cloud.','↺','Ya, Reset',async function(){
+    db=JSON.parse(JSON.stringify(DD)); YEARS=[...DEFAULT_YEARS]; selectedYears=[...YEARS];
+    if(firebaseReady){
+      try {
+        const batch = firestoreDb.batch();
+        Object.keys(DD).forEach(sec=>{
+          batch.set(firestoreDb.collection('pangkal_data').doc(sec), DD[sec]);
+        });
+        batch.set(firestoreDb.collection('pangkal_meta').doc('years'), { list: DEFAULT_YEARS });
+        await batch.commit();
+      } catch(e){ console.warn('Reset cloud gagal:', e); }
+    }
+    cacheLocally();
+    changeCount=0; updateChgBadge(); rebuildAll(); renderAllAdminTables();
+    toast('Data direset ke default','success');
+  });
+}
+
+// UI helpers
+function showLoading(show){
+  document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+}
+function showSaving(show){
+  const btn = document.querySelector('.btn-success');
+  if(btn) btn.textContent = show ? '⏳ Menyimpan...' : '💾 Simpan Semua';
+}
+function showOfflineBanner(){
+  const b = document.getElementById('offlineBanner');
+  if(b) b.style.display = 'flex';
+}
+function showConfigBanner(){
+  const b = document.getElementById('configBanner');
+  if(b) b.style.display = 'flex';
+}
+function D(sec,key){
+  const arr=(db[sec]?.[key]||DD[sec]?.[key]||[]);
+  const r=[...arr];
+  while(r.length<YEARS.length) r.push(null);
+  return r.slice(0,YEARS.length);
+}
+
+// ══════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════
+function getCreds(){
+  const s=localStorage.getItem('pangkal_creds');
+  return s?JSON.parse(s):{username:'admin',password:'admin123'};
+}
+function checkSession(){
+  const s=sessionStorage.getItem('pangkal_sess');
+  if(s){const d=JSON.parse(s);isLoggedIn=true;loggedUser=d.user;updateAuthUI();}
+}
+function onAdminClick(){
+  if(isLoggedIn) switchView('admin'); else showLogin();
+}
+function showLogin(){
+  document.getElementById('loginOverlay').classList.add('show');
+  setTimeout(()=>document.getElementById('loginUser').focus(),120);
+}
+function hideLogin(){
+  document.getElementById('loginOverlay').classList.remove('show');
+  document.getElementById('loginErr').classList.remove('show');
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+}
+function doLogin(){
+  const user=document.getElementById('loginUser').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  const c=getCreds();
+  if(user===c.username&&pass===c.password){
+    isLoggedIn=true; loggedUser=user;
+    sessionStorage.setItem('pangkal_sess',JSON.stringify({user}));
+    hideLogin(); updateAuthUI(); switchView('admin');
+    toast(`Selamat datang, ${user}! 👋`,'success');
+  } else {
+    document.getElementById('loginErr').classList.add('show');
+    const box=document.getElementById('loginBox');
+    box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
+    document.getElementById('loginPass').value='';
+    document.getElementById('loginPass').focus();
+  }
+}
+function doLogout(){
+  _confirm('Keluar dari panel admin?','Sesi admin akan diakhiri.','🔐','Ya, Keluar',function(){
+    isLoggedIn=false; loggedUser='';
+    sessionStorage.removeItem('pangkal_sess');
+    updateAuthUI(); switchView('dashboard');
+    toast('Berhasil keluar dari admin','success');
+  });
+}
+function updateAuthUI(){
+  document.getElementById('userBadgeName').textContent=loggedUser;
+  document.getElementById('userBadge').classList.toggle('show',isLoggedIn);
+  document.getElementById('logoutBtn').classList.toggle('show',isLoggedIn);
+}
+function togglePw(id,btn){
+  const inp=document.getElementById(id);
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'👁':'🙈';
+}
+function saveNewCreds(){
+  const nu=document.getElementById('newAdminUser').value.trim();
+  const np=document.getElementById('newAdminPass').value;
+  const cp=document.getElementById('confirmAdminPass').value;
+  if(!nu){toast('Username tidak boleh kosong','error');return;}
+  if(np.length<6){toast('Password minimal 6 karakter','error');return;}
+  if(np!==cp){toast('Konfirmasi password tidak cocok','error');return;}
+  localStorage.setItem('pangkal_creds',JSON.stringify({username:nu,password:np}));
+  document.getElementById('newAdminUser').value='';
+  document.getElementById('newAdminPass').value='';
+  document.getElementById('confirmAdminPass').value='';
+  toast(`Kredensial diperbarui! Login dengan username: ${nu}`,'success');
+}
+document.getElementById('loginOverlay').addEventListener('click',function(e){if(e.target===this)hideLogin();});
+
+// ══════════════════════════════════════
+// VIEW SWITCH
+// ══════════════════════════════════════
+function switchView(v){
+  if(v==='admin'&&!isLoggedIn){showLogin();return;}
+  document.getElementById('view-dashboard').style.display=v==='dashboard'?'block':'none';
+  document.getElementById('view-admin').style.display=v==='admin'?'block':'none';
+  document.getElementById('btnDash').classList.toggle('active',v==='dashboard');
+  document.getElementById('btnAdmin').classList.toggle('active',v==='admin');
+  if(v==='admin'){renderAllAdminTables();updateYearUI();}
+}
+function showTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active'); btn.classList.add('active');
+  if(id === 'panduan') renderPanduan();
+}
+function swSec(id,btn){
+  document.querySelectorAll('.asec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.snav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('asec-'+id).classList.add('active'); btn.classList.add('active');
+  if(id==='panduan-edit') initPanduanEdit();
+}
+
+// ══════════════════════════════════════
+// YEAR MANAGEMENT
+// ══════════════════════════════════════
+function buildYearDropdown(){
+  const sel=document.getElementById('yearSelect');
+  sel.innerHTML=`<option value="all">Semua Tahun (${YEARS[0]}–${YEARS[YEARS.length-1]})</option>`;
+  const grp=document.createElement('optgroup'); grp.label='── Tahun Tunggal ──';
+  YEARS.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent='Tahun '+y;grp.appendChild(o);});
+  sel.appendChild(grp);
+}
+function addYear(){
+  const inp=document.getElementById('newYearInput'); const y=parseInt(inp.value);
+  if(!y||y<1900||y>2200){toast('Tahun tidak valid','error');return;}
+  if(YEARS.includes(y)){toast(`Tahun ${y} sudah ada`,'error');return;}
+  YEARS.push(y); YEARS.sort((a,b)=>a-b);
+  const idx=YEARS.indexOf(y);
+  Object.keys(db).forEach(sec=>Object.keys(db[sec]).forEach(field=>{
+    if(Array.isArray(db[sec][field])) db[sec][field].splice(idx,0,null);
+  }));
+  inp.value=''; changeCount++; updateChgBadge();
+  rebuildAll(); renderAllAdminTables(); updateYearUI();
+  toast(`Tahun ${y} ditambahkan ✓`,'success');
+}
+function removeYear(y){
+  if(YEARS.length<=1){toast('Minimal harus ada 1 tahun','error');return;}
+  _confirm('Hapus tahun '+y+'?','Data semua indikator untuk tahun ini akan hilang.','🗑','Ya, Hapus',function(){
+    const idx=YEARS.indexOf(y); YEARS.splice(idx,1);
+    Object.keys(db).forEach(sec=>Object.keys(db[sec]).forEach(field=>{
+      if(Array.isArray(db[sec][field])) db[sec][field].splice(idx,1);
+    }));
+    changeCount++; updateChgBadge();
+    rebuildAll(); renderAllAdminTables(); updateYearUI();
+    toast('Tahun '+y+' dihapus','success');
+  });
+}
+function updateYearUI(){
+  buildYearDropdown();
+  if(YEARS.length>0){
+    document.getElementById('hdrRange').textContent=`${YEARS[0]}–${YEARS[YEARS.length-1]}`;
+    const sr=document.getElementById('statYearRange');
+    if(sr) sr.textContent=`${YEARS[0]}–${YEARS[YEARS.length-1]} (${YEARS.length})`;
+  }
+  const ct=document.getElementById('yearCountTag');
+  if(ct) ct.textContent=`${YEARS.length} Tahun`;
+  const cl=document.getElementById('yearChipList');
+  if(cl) cl.innerHTML=YEARS.map(y=>`
+    <div style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:9px;background:var(--panel2);border:1px solid var(--border);">
+      <span style="font-family:'Space Mono',monospace;font-size:0.76rem;font-weight:600;">${y}</span>
+      <button onclick="removeYear(${y})" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;line-height:1;padding:0 2px;transition:color 0.15s;"
+        onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'">✕</button>
+    </div>`).join('');
+  // sync selectedYears
+  selectedYears=selectedYears.filter(y=>YEARS.includes(y));
+  if(selectedYears.length===0) selectedYears=[...YEARS];
+  if(selectedYears.length>0)
+    document.getElementById('yearRangeText').textContent=
+      selectedYears.length===1?String(selectedYears[0]):`${selectedYears[0]} – ${selectedYears[selectedYears.length-1]}`;
+}
+function rebuildAll(){
+  selectedYears=[...YEARS];
+  updateYearUI();
+  document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('qactive'));
+  document.getElementById('qbtnAll').classList.add('qactive');
+  renderAllCharts();
+}
+function onYearSelect(val){
+  document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('qactive'));
+  if(val==='all'){selectedYears=[...YEARS];document.getElementById('yearRangeText').textContent=`${YEARS[0]} – ${YEARS[YEARS.length-1]}`;document.getElementById('qbtnAll').classList.add('qactive');}
+  else{selectedYears=[parseInt(val)];document.getElementById('yearRangeText').textContent=val;}
+  renderAllCharts();
+}
+function quickRange(n,btn){
+  const r=YEARS.slice(-n); selectedYears=r;
+  document.getElementById('yearSelect').value='all';
+  document.getElementById('yearRangeText').textContent=`${r[0]} – ${r[r.length-1]}`;
+  document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('qactive')); btn.classList.add('qactive');
+  renderAllCharts();
+}
+function quickAll(btn){
+  selectedYears=[...YEARS]; document.getElementById('yearSelect').value='all';
+  document.getElementById('yearRangeText').textContent=`${YEARS[0]} – ${YEARS[YEARS.length-1]}`;
+  document.querySelectorAll('.qbtn').forEach(b=>b.classList.remove('qactive')); btn.classList.add('qactive');
+  renderAllCharts();
+}
+
+// ══════════════════════════════════════
+// CHANGE TRACKING
+// ══════════════════════════════════════
+function updateChgBadge(){
+  const n=changeCount;
+  document.getElementById('statChanges').textContent=n;
+  document.getElementById('adminChgBadge').textContent=n;
+  document.getElementById('headerChgBadge').textContent=n;
+  document.getElementById('adminChgBadge').style.display=n>0?'inline':'none';
+  document.getElementById('headerChgBadge').classList.toggle('show',n>0);
+}
+
+// ══════════════════════════════════════
+// CHART HELPERS
+// ══════════════════════════════════════
+function isSingle(){return selectedYears.length===1;}
+function getLabels(){return selectedYears.map(String);}
+function getVals(sec,key){
+  const arr=D(sec,key);
+  return selectedYears.map(y=>{const i=YEARS.indexOf(y);return i>=0?arr[i]??null:null;});
+}
+function getLastVal(sec,key){
+  const arr=D(sec,key);
+  for(let i=selectedYears.length-1;i>=0;i--){
+    const idx=YEARS.indexOf(selectedYears[i]);
+    if(idx>=0&&arr[idx]!==null&&arr[idx]!==undefined) return {v:arr[idx],y:selectedYears[i]};
+  }
+  return {v:null,y:null};
+}
+function modeLabel(tab){
+  const el=document.getElementById('mode-'+tab);if(!el)return;
+  el.innerHTML=isSingle()?`<span class="mode-badge single">📅 Data tahun ${selectedYears[0]}</span>`:`<span class="mode-badge">📅 ${selectedYears[0]} – ${selectedYears[selectedYears.length-1]} (${selectedYears.length} tahun)</span>`;
+}
+function fmtV(v,unit){
+  if(v===null||v===undefined)return'—';
+  if(unit==='Rp'&&v>1000)return(v/1000).toFixed(0)+'K';
+  if(Math.abs(v)>=10000)return v.toLocaleString('id-ID');
+  return(+v).toFixed(2).replace(/\.?0+$/,'');
+}
+function kpiCard(label,icon,accent,v,unit,year){
+  return`<div class="kpi-card" style="--accent:${accent}"><div class="kpi-icon">${icon}</div><div class="kpi-label">${label}</div><div class="kpi-value">${v===null||v===undefined?'—':fmtV(v,unit)}</div><div class="kpi-year">${year?'📅 '+year:''}</div></div>`;
+}
+function renderKPIs(id,items){
+  document.getElementById(id).innerHTML=items.map(it=>{const {v,y}=getLastVal(it.sec,it.key);return kpiCard(it.label,it.icon,it.accent,v,it.unit||'',y);}).join('');
+}
+const GC='rgba(255,255,255,0.05)';
+Chart.defaults.color='#64748b';Chart.defaults.font.family="'Sora',sans-serif";Chart.defaults.font.size=11;
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function bS(dual,c2){const s={x:{grid:{color:GC},ticks:{color:'#64748b'}},y:{grid:{color:GC},ticks:{color:'#64748b'}}};if(dual)s.y2={position:'right',grid:{display:false},ticks:{color:c2||'#64748b'}};return s;}
+function mkLine(id,labels,datasets,dual,c2){dc(id);charts[id]=new Chart(document.getElementById(id),{type:'line',data:{labels,datasets},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{color:'#94a3b8',boxWidth:11,padding:12}}},scales:bS(dual,c2)}});}
+function mkBar(id,labels,datasets,xt,noLeg,dual,c2){dc(id);const opts={responsive:true,maintainAspectRatio:true,plugins:{legend:{display:!noLeg,labels:{color:'#94a3b8',boxWidth:11,padding:12}}},scales:{x:{grid:{color:GC},ticks:{color:'#64748b',...(xt||{})}},y:{grid:{color:GC},ticks:{color:'#64748b'}}}};if(dual)opts.scales.y2={position:'right',grid:{display:false},ticks:{color:c2||'#64748b'}};charts[id]=new Chart(document.getElementById(id),{type:'bar',data:{labels,datasets},options:opts});}
+function mkDough(id,labels,data,colors){dc(id);charts[id]=new Chart(document.getElementById(id),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderColor:'#06080f',borderWidth:3}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',padding:9,boxWidth:11}}}}});}
+function mkMixed(id,labels,barDs,lineDs){dc(id);charts[id]=new Chart(document.getElementById(id),{type:'bar',data:{labels,datasets:[...barDs,...lineDs]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{color:'#94a3b8',boxWidth:11,padding:12}}},scales:{x:{grid:{color:GC},ticks:{color:'#64748b'}},y:{grid:{color:GC},ticks:{color:'#64748b'}},y2:{position:'right',grid:{display:false},ticks:{color:'#fbbf24'}}}}});}
+
+// ══════════════════════════════════════
+// CHART RENDERS
+// ══════════════════════════════════════
+function renderAllCharts(){rEkonomi();rPendidikan();rDemografi();rKetenagakerjaan();rKemiskinan();rDistribusi();renderIPM();}
+
+function rEkonomi(){
+  modeLabel('ekonomi');
+  renderKPIs('kpi-ekonomi',[{sec:'ekonomi',key:'pdrb_adhk',label:'PDRB ADHK (Milyar Rp)',icon:'💰',accent:'var(--teal)'},{sec:'ekonomi',key:'pdrb_adhb',label:'PDRB ADHB (Milyar Rp)',icon:'📊',accent:'var(--blue)'},{sec:'ekonomi',key:'pertumbuhan',label:'Laju Pertumbuhan (%)',icon:'📈',accent:'var(--orange)'},{sec:'ekonomi',key:'inflasi',label:'Inflasi Tahunan (%)',icon:'🔥',accent:'var(--purple)'}]);
+  const lbl=getLabels();
+  if(isSingle()){
+    mkBar('chartPDRB',['PDRB ADHK','PDRB ADHB'],[{label:'Milyar Rp',data:[getVals('ekonomi','pdrb_adhk')[0],getVals('ekonomi','pdrb_adhb')[0]],backgroundColor:['rgba(0,229,195,0.7)','rgba(79,142,247,0.7)'],borderRadius:8}],null,true);
+    mkBar('chartGrowth',['Pertumbuhan (%)','Inflasi (%)'],[{label:'Nilai',data:[getVals('ekonomi','pertumbuhan')[0],getVals('ekonomi','inflasi')[0]],backgroundColor:['rgba(249,115,22,0.7)','rgba(168,85,247,0.7)'],borderRadius:8}],null,true);
+  }else{
+    mkLine('chartPDRB',lbl,[{label:'PDRB ADHK',data:getVals('ekonomi','pdrb_adhk'),borderColor:'#00e5c3',backgroundColor:'rgba(0,229,195,0.1)',fill:true,tension:0.4,pointRadius:3},{label:'PDRB ADHB',data:getVals('ekonomi','pdrb_adhb'),borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,0.1)',fill:true,tension:0.4,pointRadius:3}]);
+    const gv=getVals('ekonomi','pertumbuhan');
+    mkMixed('chartGrowth',lbl,[{label:'Pertumbuhan (%)',data:gv,backgroundColor:gv.map(v=>v===null?'transparent':v<0?'rgba(239,68,68,0.8)':'rgba(0,229,195,0.7)'),borderRadius:5,yAxisID:'y'}],[{label:'Inflasi (%)',data:getVals('ekonomi','inflasi'),type:'line',borderColor:'#fbbf24',fill:false,tension:0.4,pointRadius:3,yAxisID:'y2'}]);
+  }
+}
+function rPendidikan(){
+  modeLabel('pendidikan');
+  renderKPIs('kpi-pendidikan',[{sec:'pendidikan',key:'melek_huruf',label:'Melek Huruf (%)',icon:'📖',accent:'var(--blue)'},{sec:'pendidikan',key:'lama_sekolah',label:'Lama Sekolah (Thn)',icon:'🏫',accent:'var(--purple)'},{sec:'pendidikan',key:'apm_sd',label:'APM SD/MI (%)',icon:'👧',accent:'var(--teal)'},{sec:'pendidikan',key:'apm_smp',label:'APM SMP/MTs (%)',icon:'🎒',accent:'var(--orange)'},{sec:'pendidikan',key:'apm_sma',label:'APM SMA (%)',icon:'🎓',accent:'var(--pink)'}]);
+  const lbl=getLabels();
+  if(isSingle()){
+    mkBar('chartEdu1',['Lama Sekolah','Melek Huruf (%)'],[{label:'Nilai',data:[getVals('pendidikan','lama_sekolah')[0],getVals('pendidikan','melek_huruf')[0]],backgroundColor:['rgba(168,85,247,0.7)','rgba(0,229,195,0.7)'],borderRadius:8}],null,true);
+    mkBar('chartAPM',['SD/MI','SMP/MTs','SMA'],[{label:'APM (%)',data:[getVals('pendidikan','apm_sd')[0],getVals('pendidikan','apm_smp')[0],getVals('pendidikan','apm_sma')[0]],backgroundColor:['rgba(79,142,247,0.7)','rgba(249,115,22,0.7)','rgba(236,72,153,0.7)'],borderRadius:8}],null,true);
+    mkBar('chartAPK',['SD/MI','SMP/MTs','SMA'],[{label:'APK (%)',data:[getVals('pendidikan','apk_sd')[0],getVals('pendidikan','apk_smp')[0],getVals('pendidikan','apk_sma')[0]],backgroundColor:['rgba(79,142,247,0.7)','rgba(249,115,22,0.7)','rgba(236,72,153,0.7)'],borderRadius:8}],null,true);
+    mkBar('chartAPS',['7–12 thn','13–15 thn','16–18 thn'],[{label:'APS (%)',data:[getVals('pendidikan','aps_712')[0],getVals('pendidikan','aps_1315')[0],getVals('pendidikan','aps_1618')[0]],backgroundColor:['rgba(34,197,94,0.7)','rgba(251,191,36,0.7)','rgba(249,115,22,0.7)'],borderRadius:8}],null,true);
+  }else{
+    mkLine('chartEdu1',lbl,[{label:'Lama Sekolah (Thn)',data:getVals('pendidikan','lama_sekolah'),borderColor:'#a855f7',fill:false,tension:0.4,pointRadius:3,yAxisID:'y'},{label:'Melek Huruf (%)',data:getVals('pendidikan','melek_huruf'),borderColor:'#00e5c3',fill:false,tension:0.4,pointRadius:3,yAxisID:'y2'}],true,'#00e5c3');
+    mkLine('chartAPM',lbl,[{label:'SD/MI',data:getVals('pendidikan','apm_sd'),borderColor:'#4f8ef7',fill:false,tension:0.4,pointRadius:3},{label:'SMP/MTs',data:getVals('pendidikan','apm_smp'),borderColor:'#f97316',fill:false,tension:0.4,pointRadius:3},{label:'SMA',data:getVals('pendidikan','apm_sma'),borderColor:'#ec4899',fill:false,tension:0.4,pointRadius:3}]);
+    mkBar('chartAPK',lbl,[{label:'SD/MI',data:getVals('pendidikan','apk_sd'),backgroundColor:'rgba(79,142,247,0.7)',borderRadius:4},{label:'SMP/MTs',data:getVals('pendidikan','apk_smp'),backgroundColor:'rgba(249,115,22,0.7)',borderRadius:4},{label:'SMA',data:getVals('pendidikan','apk_sma'),backgroundColor:'rgba(236,72,153,0.7)',borderRadius:4}]);
+    mkLine('chartAPS',lbl,[{label:'7–12 thn',data:getVals('pendidikan','aps_712'),borderColor:'#22c55e',fill:false,tension:0.4,pointRadius:3},{label:'13–15 thn',data:getVals('pendidikan','aps_1315'),borderColor:'#fbbf24',fill:false,tension:0.4,pointRadius:3},{label:'16–18 thn',data:getVals('pendidikan','aps_1618'),borderColor:'#f97316',fill:false,tension:0.4,pointRadius:3}]);
+  }
+}
+function rDemografi(){
+  modeLabel('demografi');
+  renderKPIs('kpi-demografi',[{sec:'demografi',key:'jumlah_penduduk',label:'Jumlah Penduduk (jiwa)',icon:'👥',accent:'var(--teal)'},{sec:'demografi',key:'kepadatan',label:'Kepadatan (jiwa/km²)',icon:'🏙️',accent:'var(--blue)'},{sec:'demografi',key:'laju_penduduk',label:'Laju Pertumbuhan (%)',icon:'📈',accent:'var(--orange)'},{sec:'demografi',key:'ketergantungan',label:'Angka Ketergantungan',icon:'⚖️',accent:'var(--purple)'},{sec:'demografi',key:'lansia',label:'Penduduk Lansia (jiwa)',icon:'👴',accent:'var(--yellow)'}]);
+  const lbl=getLabels();
+  if(isSingle()){
+    mkBar('chartPop',['Total','Usia Produktif','Lansia'],[{label:'Jiwa',data:[getVals('demografi','jumlah_penduduk')[0],getVals('demografi','usia_produktif')[0],getVals('demografi','lansia')[0]],backgroundColor:['rgba(0,229,195,0.7)','rgba(79,142,247,0.7)','rgba(251,191,36,0.7)'],borderRadius:8}],null,true);
+    mkBar('chartDemog',['Kepadatan (jiwa/km²)'],[{label:'Jiwa/km²',data:[getVals('demografi','kepadatan')[0]],backgroundColor:['rgba(0,229,195,0.7)'],borderRadius:8}],null,true);
+  }else{
+    mkBar('chartPop',lbl,[{label:'Total Penduduk',data:getVals('demografi','jumlah_penduduk'),backgroundColor:'rgba(0,229,195,0.7)',borderRadius:5},{label:'Usia Produktif',data:getVals('demografi','usia_produktif'),backgroundColor:'rgba(79,142,247,0.7)',borderRadius:5}]);
+    mkLine('chartDemog',lbl,[{label:'Kepadatan (jiwa/km²)',data:getVals('demografi','kepadatan'),borderColor:'#00e5c3',fill:false,tension:0.4,pointRadius:3,yAxisID:'y'},{label:'Laju Pertumbuhan (%)',data:getVals('demografi','laju_penduduk'),borderColor:'#f97316',fill:false,tension:0.4,pointRadius:3,yAxisID:'y2'}],true,'#f97316');
+  }
+  const lj=D('demografi','jumlah_penduduk').findLast(v=>v!==null)||0;
+  const lp=D('demografi','usia_produktif').findLast(v=>v!==null)||0;
+  const ll=D('demografi','lansia').findLast(v=>v!==null)||0;
+  mkDough('chartAgePie',['Usia Produktif','Usia Lanjut','Lainnya'],[lp,ll,Math.max(0,lj-lp-ll)],['#4f8ef7','#fbbf24','#374151']);
+  mkLine('chartDep',lbl,[{label:'Angka Ketergantungan',data:getVals('demografi','ketergantungan'),borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,0.12)',fill:true,tension:0.4,pointRadius:4}]);
+  mkBar('chartElderly',lbl,[{label:'Penduduk Lansia',data:getVals('demografi','lansia'),backgroundColor:'rgba(251,191,36,0.72)',borderRadius:6}],null,true);
+}
+function rKetenagakerjaan(){
+  modeLabel('ketenagakerjaan');
+  renderKPIs('kpi-ketenagakerjaan',[{sec:'ketenagakerjaan',key:'tpak',label:'TPAK (%)',icon:'💼',accent:'var(--green)'},{sec:'ketenagakerjaan',key:'tpt',label:'TPT (%)',icon:'🔴',accent:'var(--red)'}]);
+  const lbl=getLabels(),tv=getVals('ketenagakerjaan','tpt');
+  if(isSingle()){
+    mkBar('chartTPT',['TPT (%)'],[{label:'%',data:[tv[0]],backgroundColor:[tv[0]>8?'rgba(239,68,68,0.8)':tv[0]>6?'rgba(249,115,22,0.7)':'rgba(34,197,94,0.7)'],borderRadius:8}],null,true);
+    mkBar('chartTPAK',['TPAK (%)'],[{label:'%',data:[getVals('ketenagakerjaan','tpak')[0]],backgroundColor:['rgba(34,197,94,0.7)'],borderRadius:8}],null,true);
+  }else{
+    mkBar('chartTPT',lbl,[{label:'TPT (%)',data:tv,backgroundColor:tv.map(v=>v===null?'transparent':v>8?'rgba(239,68,68,0.8)':v>6?'rgba(249,115,22,0.7)':'rgba(34,197,94,0.7)'),borderRadius:5}],null,true);
+    mkLine('chartTPAK',lbl,[{label:'TPAK (%)',data:getVals('ketenagakerjaan','tpak'),borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,0.11)',fill:true,tension:0.4,pointRadius:4,spanGaps:true}]);
+  }
+}
+function rKemiskinan(){
+  modeLabel('kemiskinan');
+  renderKPIs('kpi-kemiskinan',[{sec:'kemiskinan',key:'p0',label:'% Penduduk Miskin (P0)',icon:'📉',accent:'var(--red)'},{sec:'kemiskinan',key:'garis_kemiskinan',label:'Garis Kemiskinan (Rp)',icon:'💵',accent:'var(--orange)'},{sec:'kemiskinan',key:'p1',label:'Indeks Kedalaman (P1)',icon:'📐',accent:'var(--yellow)'},{sec:'kemiskinan',key:'p2',label:'Indeks Keparahan (P2)',icon:'📏',accent:'var(--purple)'},{sec:'kemiskinan',key:'kriminalitas',label:'Angka Kriminalitas',icon:'🚨',accent:'var(--blue)'}]);
+  const lbl=getLabels(),gk=getVals('kemiskinan','garis_kemiskinan').map(v=>v?v/1000:null);
+  if(isSingle()){
+    mkBar('chartPoverty',['P0 (%)','Garis Kemiskinan (Rb Rp)'],[{label:'Nilai',data:[getVals('kemiskinan','p0')[0],gk[0]],backgroundColor:['rgba(239,68,68,0.7)','rgba(251,191,36,0.7)'],borderRadius:8}],null,true);
+    mkBar('chartPovIdx',['P1','P2'],[{label:'Nilai',data:[getVals('kemiskinan','p1')[0],getVals('kemiskinan','p2')[0]],backgroundColor:['rgba(249,115,22,0.7)','rgba(239,68,68,0.7)'],borderRadius:8}],null,true);
+  }else{
+    mkMixed('chartPoverty',lbl,[{label:'% Miskin',data:getVals('kemiskinan','p0'),backgroundColor:'rgba(239,68,68,0.7)',borderRadius:5,yAxisID:'y'}],[{label:'Garis Kemiskinan (Rb Rp)',data:gk,type:'line',borderColor:'#fbbf24',fill:false,tension:0.4,pointRadius:3,yAxisID:'y2'}]);
+    mkLine('chartPovIdx',lbl,[{label:'P1 – Kedalaman',data:getVals('kemiskinan','p1'),borderColor:'#f97316',fill:false,tension:0.4,pointRadius:4},{label:'P2 – Keparahan',data:getVals('kemiskinan','p2'),borderColor:'#ef4444',fill:false,tension:0.4,pointRadius:4}]);
+  }
+  const cv=getVals('kemiskinan','kriminalitas');
+  mkBar('chartCrime',lbl,[{label:'Kriminalitas',data:cv,backgroundColor:cv.map(v=>v===null?'transparent':v>500?'rgba(239,68,68,0.8)':'rgba(168,85,247,0.7)'),borderRadius:5}],null,true);
+}
+function rDistribusi(){
+  modeLabel('distribusi');
+  const SK=['pertanian','industri','listrik','air','konstruksi','perdagangan','transportasi','akomodasi','infokom','keuangan','realestate','jasa_persh','adm_pemerint','jasa_pend','jasa_kes','jasa_lain'];
+  const SL=['Pertanian','Industri','Listrik','Air','Konstruksi','Perdagangan','Transportasi','Akomodasi','Infokom','Keuangan','Real Estate','Jasa Persh','Adm Pemerint','Jasa Pend','Jasa Kes','Jasa Lain'];
+  const SC=['#22c55e','#4f8ef7','#fbbf24','#06b6d4','#f97316','#ec4899','#a855f7','#00e5c3','#f43f5e','#3b82f6','#10b981','#8b5cf6','#ef4444','#14b8a6','#fb923c','#e879f9'];
+  const lbl=getLabels(),xt={maxRotation:45,minRotation:30};
+  if(isSingle()){
+    const y=selectedYears[0],idx=YEARS.indexOf(y);
+    document.getElementById('pie-year-label').textContent=`(${y})`;
+    document.getElementById('bar-year-label').textContent=`(${y})`;
+    const pd=SK.map(k=>D('distribusi',k)[idx]??0);
+    const ld=SK.map(k=>D('laju',k)[idx]??null);
+    const sorted=SK.map((k,i)=>({label:SL[i],v:pd[i],c:SC[i]})).sort((a,b)=>b.v-a.v);
+    document.getElementById('kpi-distribusi').innerHTML=sorted.slice(0,5).map((s,i)=>kpiCard(s.label+' (%)',['🥇','🥈','🥉','4️⃣','5️⃣'][i],s.c,s.v,'%',y)).join('');
+    mkDough('chartPie',SL,pd,SC);
+    mkBar('chartSectorGrowth',SL,[{label:'Laju (%)',data:ld,backgroundColor:ld.map(v=>v===null?'transparent':v<0?'rgba(239,68,68,0.8)':v>8?'rgba(34,197,94,0.85)':'rgba(79,142,247,0.7)'),borderRadius:5}],xt,true);
+    mkBar('chartTop5',SL,[{label:`Distribusi % (${y})`,data:pd,backgroundColor:SC.map(c=>c+'cc'),borderRadius:5}],xt);
+  }else{
+    document.getElementById('pie-year-label').textContent='(Terbaru)';
+    document.getElementById('bar-year-label').textContent='(Terbaru)';
+    document.getElementById('kpi-distribusi').innerHTML='';
+    const li=YEARS.reduceRight((f,y,i)=>f!==-1?f:SK.some(k=>D('distribusi',k)[i]!==null)?i:-1,-1);
+    const pd=SK.map(k=>li>=0?D('distribusi',k)[li]??0:0);
+    const ld=SK.map(k=>li>=0?D('laju',k)[li]??null:null);
+    mkDough('chartPie',SL,pd,SC);
+    mkLine('chartTop5',lbl,[{label:'Perdagangan',data:getVals('distribusi','perdagangan'),borderColor:'#ec4899',fill:false,tension:0.4,pointRadius:3},{label:'Industri',data:getVals('distribusi','industri'),borderColor:'#4f8ef7',fill:false,tension:0.4,pointRadius:3},{label:'Konstruksi',data:getVals('distribusi','konstruksi'),borderColor:'#f97316',fill:false,tension:0.4,pointRadius:3},{label:'Adm Pemerint',data:getVals('distribusi','adm_pemerint'),borderColor:'#ef4444',fill:false,tension:0.4,pointRadius:3},{label:'Transportasi',data:getVals('distribusi','transportasi'),borderColor:'#a855f7',fill:false,tension:0.4,pointRadius:3}]);
+    mkBar('chartSectorGrowth',SL,[{label:'Laju Terbaru (%)',data:ld,backgroundColor:ld.map(v=>v===null?'transparent':v<0?'rgba(239,68,68,0.8)':v>8?'rgba(34,197,94,0.85)':'rgba(79,142,247,0.7)'),borderRadius:5}],xt,true);
+  }
+}
+
+// ══════════════════════════════════════
+// IPM
+// ══════════════════════════════════════
+function renderIPM(){
+  const lbl = selectedYears.map(String);
+  const xt = { color: getComputedStyle(document.documentElement).getPropertyValue('--muted') || '#64748b' };
+
+  const ipmVals    = getVals('ipm','ipm');
+  const ahhVals    = getVals('ipm','ahh');
+  const hlsVals    = getVals('ipm','hls');
+  const rlsVals    = getVals('ipm','rls');
+  const pngVals    = getVals('ipm','pengeluaran');
+
+  // KPI cards
+  if(isSingle()){
+    const y = selectedYears[0], idx = YEARS.indexOf(y);
+    const ipmV = D('ipm','ipm')[idx];
+    const ahhV = D('ipm','ahh')[idx];
+    const hlsV = D('ipm','hls')[idx];
+    const rlsV = D('ipm','rls')[idx];
+    const pngV = D('ipm','pengeluaran')[idx];
+    document.getElementById('kpi-ipm').innerHTML = [
+      kpiCard('IPM','🌟','#6366f1', ipmV, '', y),
+      kpiCard('AHH (thn)','❤️','#ef4444', ahhV, ' thn', y),
+      kpiCard('HLS (thn)','📚','#4f8ef7', hlsV, ' thn', y),
+      kpiCard('RLS (thn)','✏️','#22c55e', rlsV, ' thn', y),
+      kpiCard('Pengeluaran/Kapita','💰','#f97316', pngV ? (pngV/1000).toFixed(1)+'jt' : '–', '', y),
+    ].join('');
+    modeLabel('ipm');
+  } else {
+    document.getElementById('kpi-ipm').innerHTML = '';
+    modeLabel('ipm');
+  }
+
+  // Charts
+  mkLine('chartIPM', lbl, [{
+    label:'IPM', data: ipmVals,
+    borderColor:'#6366f1', backgroundColor:'rgba(99,102,241,0.1)',
+    fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'#6366f1'
+  }], xt);
+
+  mkLine('chartAHH', lbl, [{
+    label:'AHH (tahun)', data: ahhVals,
+    borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.08)',
+    fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'#ef4444'
+  }], xt);
+
+  mkLine('chartHLS', lbl, [{
+    label:'HLS (tahun)', data: hlsVals,
+    borderColor:'#4f8ef7', backgroundColor:'rgba(79,142,247,0.09)',
+    fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'#4f8ef7'
+  }], xt);
+
+  mkLine('chartRLS', lbl, [{
+    label:'RLS (tahun)', data: rlsVals,
+    borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,0.09)',
+    fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'#22c55e'
+  }], xt);
+
+  mkBar('chartPengeluaran', lbl, [{
+    label:'Pengeluaran per Kapita (Ribu Rp)',
+    data: pngVals,
+    backgroundColor:'rgba(249,115,22,0.75)',
+    borderRadius:5
+  }], xt);
+}
+
+// ══════════════════════════════════════
+// ADMIN TABLE
+// ══════════════════════════════════════
+function renderAdminTable(secKey){
+  const schema=SCHEMA[secKey];if(!schema)return;
+  let html=`<div style="overflow-x:auto"><table class="etable"><thead><tr><th style="min-width:220px">Indikator</th>${YEARS.map(y=>`<th class="year-th">${y}</th>`).join('')}</tr></thead><tbody>`;
+  schema.fields.forEach(f=>{
+    const vals=D(secKey,f.key);
+    html+=`<tr><td><div class="fname">${f.label}</div>${f.desc?`<div class="fdesc">${f.desc}</div>`:''}<span class="funit">${f.unit||'—'}</span></td>`;
+    YEARS.forEach((y,i)=>{const v=vals[i];html+=`<td><input class="einput" type="number" step="any" value="${v===null||v===undefined?'':v}" placeholder="—" data-sec="${secKey}" data-field="${f.key}" data-idx="${i}" oninput="onEdit(this)"></td>`;});
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  document.getElementById('atable-'+secKey).innerHTML=html;
+}
+function renderAllAdminTables(){
+  Object.keys(SCHEMA).forEach(k=>renderAdminTable(k));
+  let t=0;Object.values(SCHEMA).forEach(s=>t+=s.fields.length);
+  document.getElementById('statIndicators').textContent=t;
+}
+function onEdit(input){
+  const{sec,field,idx}=input.dataset;
+  const v=input.value.trim()===''?null:parseFloat(input.value);
+  if(!db[sec])db[sec]={};
+  if(!db[sec][field]){const def=DD[sec]?.[field]||[];db[sec][field]=[...def];while(db[sec][field].length<YEARS.length)db[sec][field].push(null);}
+  db[sec][field][parseInt(idx)]=v;
+  input.classList.add('changed');
+  changeCount++;updateChgBadge();
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+function toast(msg,type='success'){
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span>${type==='success'?'✅':'❌'}</span><span>${msg}</span>`;
+  document.getElementById('toastWrap').appendChild(el);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),350);},3000);
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+
+// ══════════════════════════════════════
+// PANDUAN INDIKATOR
+// ══════════════════════════════════════
+const PANDUAN_DATA = [
+  {
+    kat: 'ekonomi', label: '📈 Ekonomi & PDRB', color: '#00e5c3',
+    indikator: [
+      {
+        nama: 'Produk Domestik Regional Bruto Atas Dasar Harga Konstan',
+        singkatan: 'PDRB ADHK', satuan: 'Milyar Rp',
+        desc: 'Nilai seluruh barang dan jasa yang dihasilkan di Kota Pangkalpinang dalam satu tahun, dihitung dengan harga tahun dasar 2010. Digunakan untuk mengukur pertumbuhan ekonomi riil karena sudah mengeliminasi pengaruh inflasi.',
+        formula: 'PDRB ADHK = Σ (Output sektor × Harga tahun dasar 2010)',
+        sumber: 'BPS Kota Pangkalpinang — Publikasi PDRB tahunan'
+      },
+      {
+        nama: 'Produk Domestik Regional Bruto Atas Dasar Harga Berlaku',
+        singkatan: 'PDRB ADHB', satuan: 'Milyar Rp',
+        desc: 'Nilai seluruh barang dan jasa yang dihasilkan dihitung menggunakan harga pada tahun berjalan. Mencerminkan ukuran ekonomi nominal dan digunakan untuk menghitung struktur ekonomi serta pendapatan per kapita.',
+        formula: 'PDRB ADHB = Σ (Output sektor × Harga tahun berjalan)',
+        sumber: 'BPS Kota Pangkalpinang — Publikasi PDRB tahunan'
+      },
+      {
+        nama: 'Laju Pertumbuhan Ekonomi',
+        singkatan: 'LPE', satuan: '%',
+        desc: 'Persentase perubahan PDRB ADHK tahun ini dibandingkan tahun sebelumnya. Angka positif menunjukkan perekonomian tumbuh, negatif berarti kontraksi. Indikator utama kinerja perekonomian daerah.',
+        formula: 'LPE = ((PDRB ADHK(t) − PDRB ADHK(t−1)) / PDRB ADHK(t−1)) × 100',
+        sumber: 'BPS Kota Pangkalpinang — dihitung dari data PDRB ADHK'
+      },
+      {
+        nama: 'Laju Inflasi Tahunan',
+        singkatan: 'Inflasi', satuan: '%',
+        desc: 'Persentase kenaikan harga rata-rata barang dan jasa konsumsi selama setahun. Diukur menggunakan Indeks Harga Konsumen (IHK). Inflasi yang terkendali (2–4%) umumnya dianggap kondusif bagi pertumbuhan ekonomi.',
+        formula: 'Inflasi = ((IHK(t) − IHK(t−1)) / IHK(t−1)) × 100',
+        sumber: 'BPS Kota Pangkalpinang — Survei Harga Konsumen'
+      }
+    ]
+  },
+  {
+    kat: 'pendidikan', label: '🎓 Pendidikan', color: '#4f8ef7',
+    indikator: [
+      {
+        nama: 'Angka Melek Huruf',
+        singkatan: 'AMH', satuan: '%',
+        desc: 'Persentase penduduk usia 15 tahun ke atas yang mampu membaca dan menulis huruf latin atau huruf lainnya. Merupakan indikator dasar capaian pendidikan suatu wilayah.',
+        formula: 'AMH = (Penduduk ≥15 thn yang melek huruf / Total penduduk ≥15 thn) × 100',
+        sumber: 'BPS — Survei Sosial Ekonomi Nasional (Susenas)'
+      },
+      {
+        nama: 'Rata-rata Lama Sekolah',
+        singkatan: 'RLS', satuan: 'Tahun',
+        desc: 'Rata-rata jumlah tahun yang dihabiskan oleh penduduk usia 25 tahun ke atas untuk menempuh pendidikan formal. Merupakan salah satu komponen Indeks Pembangunan Manusia (IPM).',
+        formula: 'RLS = Rata-rata lama sekolah penduduk ≥25 tahun (dalam tahun)',
+        sumber: 'BPS — Susenas, digunakan dalam penghitungan IPM'
+      },
+      {
+        nama: 'Angka Partisipasi Murni',
+        singkatan: 'APM', satuan: '%',
+        desc: 'Persentase siswa pada kelompok usia sekolah tertentu yang bersekolah tepat di jenjang yang sesuai usianya. APM SD untuk usia 7–12 tahun, APM SMP untuk 13–15 tahun, APM SMA untuk 16–18 tahun. Nilai maksimal APM adalah 100.',
+        formula: 'APM = (Siswa usia resmi di jenjang X / Penduduk usia resmi jenjang X) × 100',
+        sumber: 'BPS — Susenas & Dinas Pendidikan'
+      },
+      {
+        nama: 'Angka Partisipasi Kasar',
+        singkatan: 'APK', satuan: '%',
+        desc: 'Persentase jumlah siswa di suatu jenjang pendidikan terhadap penduduk kelompok usia yang sesuai. APK bisa melebihi 100% karena menghitung semua siswa terlepas usianya, termasuk yang lebih tua atau lebih muda dari usia resmi.',
+        formula: 'APK = (Total siswa di jenjang X / Penduduk usia resmi jenjang X) × 100',
+        sumber: 'BPS — Susenas & Dinas Pendidikan'
+      },
+      {
+        nama: 'Angka Partisipasi Sekolah',
+        singkatan: 'APS', satuan: '%',
+        desc: 'Persentase penduduk pada kelompok usia tertentu yang sedang bersekolah, tanpa memperhatikan jenjang yang ditempuh. Berbeda dengan APM/APK yang terikat pada jenjang, APS hanya melihat apakah seseorang masih bersekolah atau tidak.',
+        formula: 'APS = (Penduduk usia X–Y yang bersekolah / Total penduduk usia X–Y) × 100',
+        sumber: 'BPS — Susenas'
+      }
+    ]
+  },
+  {
+    kat: 'demografi', label: '👥 Demografi', color: '#a855f7',
+    indikator: [
+      {
+        nama: 'Jumlah Penduduk',
+        singkatan: null, satuan: 'Jiwa',
+        desc: 'Total penduduk yang tinggal dan menetap di Kota Pangkalpinang berdasarkan hasil registrasi penduduk atau proyeksi sensus. Data ini menjadi dasar perhitungan berbagai indikator per kapita.',
+        formula: null,
+        sumber: 'BPS — Sensus Penduduk & proyeksi penduduk'
+      },
+      {
+        nama: 'Laju Pertumbuhan Penduduk',
+        singkatan: 'LPP', satuan: '%',
+        desc: 'Rata-rata persentase perubahan jumlah penduduk per tahun. Laju pertumbuhan yang tinggi menuntut penyediaan layanan publik yang lebih besar, sedangkan laju rendah atau negatif dapat mengindikasikan migrasi keluar atau penurunan fertilitas.',
+        formula: 'LPP = ((Penduduk(t) / Penduduk(t−1))^(1/n) − 1) × 100',
+        sumber: 'BPS — Sensus Penduduk 2010 & 2020, Proyeksi Penduduk'
+      },
+      {
+        nama: 'Kepadatan Penduduk',
+        singkatan: null, satuan: 'Jiwa/km²',
+        desc: 'Jumlah penduduk dibagi luas wilayah daratan. Mencerminkan tekanan penggunaan lahan dan kebutuhan infrastruktur. Pangkalpinang memiliki luas sekitar 104,5 km².',
+        formula: 'Kepadatan = Jumlah Penduduk / Luas Wilayah (km²)',
+        sumber: 'BPS — Pangkalpinang Dalam Angka'
+      },
+      {
+        nama: 'Angka Ketergantungan',
+        singkatan: 'DR', satuan: 'per 100 penduduk produktif',
+        desc: 'Rasio antara penduduk tidak produktif (usia 0–14 dan 65+) terhadap penduduk usia produktif (15–64 tahun). Semakin rendah angkanya, semakin besar potensi bonus demografi yang dapat dimanfaatkan.',
+        formula: 'DR = ((Pend. 0–14 + Pend. ≥65) / Pend. 15–64) × 100',
+        sumber: 'BPS — Sensus & Proyeksi Penduduk'
+      },
+      {
+        nama: 'Penduduk Usia Produktif',
+        singkatan: null, satuan: 'Jiwa',
+        desc: 'Jumlah penduduk berusia 15–64 tahun yang secara demografis tergolong usia kerja. Kelompok ini menjadi tulang punggung ekonomi dan potensi angkatan kerja suatu daerah.',
+        formula: null,
+        sumber: 'BPS — Sensus & Proyeksi Penduduk'
+      },
+      {
+        nama: 'Penduduk Usia Lanjut (Lansia)',
+        singkatan: null, satuan: 'Jiwa',
+        desc: 'Jumlah penduduk berusia 60 tahun ke atas. Peningkatan jumlah lansia menuntut penyesuaian layanan kesehatan, jaminan sosial, dan infrastruktur yang ramah lansia.',
+        formula: null,
+        sumber: 'BPS — Sensus & Proyeksi Penduduk'
+      }
+    ]
+  },
+  {
+    kat: 'ketenagakerjaan', label: '💼 Ketenagakerjaan', color: '#f97316',
+    indikator: [
+      {
+        nama: 'Tingkat Pengangguran Terbuka',
+        singkatan: 'TPT', satuan: '%',
+        desc: 'Persentase pengangguran terhadap total angkatan kerja. Pengangguran terbuka adalah mereka yang tidak bekerja, sedang mencari kerja, atau mempersiapkan usaha. Semakin rendah TPT, semakin baik penyerapan tenaga kerja di suatu daerah.',
+        formula: 'TPT = (Pengangguran / Angkatan Kerja) × 100',
+        sumber: 'BPS — Survei Angkatan Kerja Nasional (Sakernas) Agustus'
+      },
+      {
+        nama: 'Tingkat Partisipasi Angkatan Kerja',
+        singkatan: 'TPAK', satuan: '%',
+        desc: 'Persentase angkatan kerja (bekerja + pengangguran terbuka) terhadap penduduk usia kerja (15 tahun ke atas). Menggambarkan seberapa aktif penduduk usia kerja berpartisipasi dalam pasar tenaga kerja.',
+        formula: 'TPAK = (Angkatan Kerja / Penduduk Usia Kerja ≥15 thn) × 100',
+        sumber: 'BPS — Sakernas Agustus'
+      }
+    ]
+  },
+  {
+    kat: 'kemiskinan', label: '📊 Kemiskinan & Sosial', color: '#fbbf24',
+    indikator: [
+      {
+        nama: 'Garis Kemiskinan',
+        singkatan: 'GK', satuan: 'Rp/kapita/bulan',
+        desc: 'Nilai pengeluaran minimum per kapita per bulan yang dibutuhkan untuk memenuhi kebutuhan dasar makanan (setara 2.100 kkal/hari) dan non-makanan. Penduduk dengan pengeluaran di bawah angka ini dikategorikan miskin.',
+        formula: 'GK = Garis Kemiskinan Makanan + Garis Kemiskinan Non-Makanan',
+        sumber: 'BPS — Susenas, dihitung setiap Maret'
+      },
+      {
+        nama: 'Persentase Penduduk Miskin',
+        singkatan: 'P0 (Headcount Index)', satuan: '%',
+        desc: 'Persentase penduduk yang pengeluarannya berada di bawah Garis Kemiskinan. Indikator kemiskinan yang paling umum digunakan untuk mengukur insiden kemiskinan di suatu daerah.',
+        formula: 'P0 = (Jumlah Penduduk Miskin / Total Penduduk) × 100',
+        sumber: 'BPS — Susenas Maret'
+      },
+      {
+        nama: 'Indeks Kedalaman Kemiskinan',
+        singkatan: 'P1 (Poverty Gap Index)', satuan: 'Indeks (0–1)',
+        desc: 'Mengukur rata-rata kesenjangan pengeluaran penduduk miskin terhadap Garis Kemiskinan. Semakin tinggi nilai P1, semakin jauh rata-rata pengeluaran orang miskin dari garis kemiskinan, artinya kemiskinan semakin dalam.',
+        formula: 'P1 = (1/n) × Σ [(GK − yi) / GK] untuk yi < GK',
+        sumber: 'BPS — Susenas Maret'
+      },
+      {
+        nama: 'Indeks Keparahan Kemiskinan',
+        singkatan: 'P2 (Poverty Severity Index)', satuan: 'Indeks (0–1)',
+        desc: 'Mengukur ketimpangan pengeluaran di antara penduduk miskin sendiri. Nilai P2 yang tinggi mengindikasikan sebagian orang miskin sangat jauh di bawah garis kemiskinan, sementara yang lain lebih dekat.',
+        formula: 'P2 = (1/n) × Σ [(GK − yi) / GK]² untuk yi < GK',
+        sumber: 'BPS — Susenas Maret'
+      },
+      {
+        nama: 'Angka Kriminalitas',
+        singkatan: null, satuan: 'Kasus/tahun',
+        desc: 'Jumlah tindak pidana yang dilaporkan dan dicatat oleh kepolisian dalam satu tahun di wilayah Kota Pangkalpinang. Digunakan sebagai proxy indikator keamanan dan ketertiban masyarakat.',
+        formula: null,
+        sumber: 'Polres Pangkalpinang — Data Crime Total'
+      }
+    ]
+  },
+  {
+    kat: 'ipm', label: '🌟 IPM & Dimensi Pembentuk', color: '#6366f1',
+    indikator: [
+      {
+        nama: 'Indeks Pembangunan Manusia',
+        singkatan: 'IPM / HDI', satuan: 'Indeks (0–100)',
+        desc: 'Indeks komposit yang mengukur capaian pembangunan manusia dari tiga dimensi dasar: umur panjang dan hidup sehat (kesehatan), pengetahuan (pendidikan), serta standar hidup layak (ekonomi). Dihitung sebagai rata-rata geometrik dari tiga indeks dimensi. IPM ≥80 dikategorikan "sangat tinggi", 70–80 "tinggi", 60–70 "sedang", dan <60 "rendah".',
+        formula: 'IPM = ∛(I_Kesehatan × I_Pendidikan × I_Pengeluaran) × 100',
+        sumber: 'BPS Kota Pangkalpinang — Publikasi IPM tahunan'
+      },
+      {
+        nama: 'Angka Harapan Hidup saat Lahir',
+        singkatan: 'AHH / UHH', satuan: 'Tahun',
+        desc: 'Rata-rata perkiraan lama hidup seseorang sejak lahir, berdasarkan pola kematian yang berlaku. Mencerminkan derajat kesehatan masyarakat. Dihitung dari Sensus Penduduk dan proyeksi. Semakin tinggi AHH, semakin baik kualitas kesehatan dan layanan medis suatu wilayah.',
+        formula: 'I_Kesehatan = (AHH − 20) / (85 − 20)',
+        sumber: 'BPS — Sensus Penduduk 2010 & 2020, Proyeksi Penduduk, Susenas'
+      },
+      {
+        nama: 'Harapan Lama Sekolah',
+        singkatan: 'HLS / EYS', satuan: 'Tahun',
+        desc: 'Lamanya pendidikan formal (dalam tahun) yang diharapkan akan dirasakan oleh anak usia 7 tahun di masa mendatang. Menggambarkan kondisi pembangunan sistem pendidikan. Dihitung dari proporsi penduduk yang bersekolah per kelompok umur.',
+        formula: 'HLS = Σ (Penduduk bersekolah usia i / Penduduk usia i) untuk i ≥ 7 tahun',
+        sumber: 'BPS — Susenas'
+      },
+      {
+        nama: 'Rata-rata Lama Sekolah',
+        singkatan: 'RLS / MYS', satuan: 'Tahun',
+        desc: 'Rata-rata jumlah tahun pendidikan formal yang ditempuh penduduk usia 25 tahun ke atas. Salah satu dari dua indikator dimensi pengetahuan dalam IPM. Nilai RLS diasumsikan tidak pernah turun karena mencerminkan akumulasi pendidikan.',
+        formula: 'I_Pendidikan = ((HLS/18) + (RLS/15)) / 2',
+        sumber: 'BPS — Susenas'
+      },
+      {
+        nama: 'Pengeluaran per Kapita Disesuaikan',
+        singkatan: 'PPP', satuan: 'Ribu Rp/orang/tahun',
+        desc: 'Rata-rata pengeluaran per kapita per tahun yang disesuaikan dengan paritas daya beli (Purchasing Power Parity). Dihitung menggunakan harga konstan tahun dasar 2012 dan 96 komoditas. Merepresentasikan dimensi standar hidup layak dalam IPM.',
+        formula: 'I_Pengeluaran = (ln(pengeluaran) − ln(1.007.436)) / (ln(26.572.352) − ln(1.007.436))',
+        sumber: 'BPS — Susenas (dihitung tahunan, referensi Jakarta Selatan)'
+      }
+    ]
+  },
+  {
+    kat: 'distribusi', label: '🧩 Distribusi & Laju Sektoral PDRB', color: '#22c55e',
+    indikator: [
+      {
+        nama: 'Distribusi PDRB per Sektor (16 sektor)',
+        singkatan: 'Distribusi ADHB', satuan: '%',
+        desc: 'Kontribusi masing-masing lapangan usaha terhadap total PDRB Atas Dasar Harga Berlaku. Mencerminkan struktur ekonomi kota — sektor mana yang mendominasi output perekonomian. Mencakup 16 sektor sesuai klasifikasi KBLI BPS.',
+        formula: 'Distribusi Sektor X = (PDRB ADHB Sektor X / Total PDRB ADHB) × 100',
+        sumber: 'BPS — PDRB Menurut Lapangan Usaha ADHB'
+      },
+      {
+        nama: 'Laju Pertumbuhan PDRB per Sektor (16 sektor)',
+        singkatan: 'Laju ADHK', satuan: '%',
+        desc: 'Persentase perubahan nilai tambah bruto masing-masing lapangan usaha berdasarkan harga konstan 2010. Menunjukkan sektor mana yang tumbuh paling cepat atau paling lambat secara riil dalam satu tahun.',
+        formula: 'Laju Sektor X = ((PDRB ADHK Sektor X(t) − PDRB ADHK Sektor X(t−1)) / PDRB ADHK Sektor X(t−1)) × 100',
+        sumber: 'BPS — PDRB Menurut Lapangan Usaha ADHK 2010'
+      }
+    ]
+  }
+];
+
+let _panduanKatFilter = 'semua';
+let _panduanSearch = '';
+
+function renderPanduan(){
+  const container = document.getElementById('panduanList');
+  if(!container) return;
+
+  let sections = PANDUAN_DATA.filter(s =>
+    _panduanKatFilter === 'semua' || s.kat === _panduanKatFilter
+  );
+
+  let totalVisible = 0;
+  let html = '';
+
+  sections.forEach(sec => {
+    const filtered = sec.indikator.filter(ind => {
+      if(!_panduanSearch) return true;
+      const q = _panduanSearch.toLowerCase();
+      return ind.nama.toLowerCase().includes(q) ||
+             (ind.singkatan||'').toLowerCase().includes(q) ||
+             ind.desc.toLowerCase().includes(q);
+    });
+    if(!filtered.length) return;
+    totalVisible += filtered.length;
+
+    html += `<div class="panduan-section open" data-kat="${sec.kat}">
+      <div class="panduan-section-header" onclick="togglePanduanSection(this.parentElement)">
+        <span style="font-size:1.1rem">${sec.label.split(' ')[0]}</span>
+        <span class="panduan-section-title">${sec.label.substring(sec.label.indexOf(' ')+1)}</span>
+        <span class="panduan-section-count">${filtered.length} indikator</span>
+        <span class="panduan-section-chevron">▼</span>
+      </div>
+      <div class="panduan-section-body">
+        <table class="panduan-table">
+          <thead><tr>
+            <th style="min-width:220px">Indikator</th>
+            <th>Satuan</th>
+            <th style="min-width:320px">Penjelasan & Formula</th>
+            <th style="min-width:180px">Sumber Data</th>
+          </tr></thead>
+          <tbody>`;
+
+    filtered.forEach(ind => {
+      html += `<tr>
+        <td>
+          <div class="p-nama">${ind.nama}</div>
+          ${ind.singkatan ? `<span class="p-singkatan">${ind.singkatan}</span>` : ''}
+        </td>
+        <td><span class="p-satuan">${ind.satuan}</span></td>
+        <td>
+          <div class="p-desc">${ind.desc}</div>
+          ${ind.formula ? `<div class="p-formula">${ind.formula}</div>` : ''}
+        </td>
+        <td><div class="p-sumber">📁 ${ind.sumber}</div></td>
+      </tr>`;
+    });
+
+    html += `</tbody></table></div></div>`;
+  });
+
+  container.innerHTML = html;
+  document.getElementById('panduanEmpty').style.display = totalVisible === 0 ? 'block' : 'none';
+}
+
+function togglePanduanSection(el){
+  el.classList.toggle('open');
+}
+
+function filterPanduan(val){
+  _panduanSearch = val.trim();
+  renderPanduan();
+}
+
+function filterPanduanKat(kat, btn){
+  _panduanKatFilter = kat;
+  document.querySelectorAll('.pfbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPanduan();
+}
+
+// ══════════════════════════════════════
+// THEME
+// ══════════════════════════════════════
+function applyTheme(theme){
+  const dashPage = document.getElementById('dashboard-page');
+  if(dashPage) dashPage.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeToggleBtn');
+  if(btn) btn.textContent = theme === 'light' ? '🌙' : '☀️';
+  localStorage.setItem('pangkal_theme', theme);
+  // Sync ke landing page juga
+  if(theme === 'light'){
+    document.body.classList.add('light-theme');
+  } else {
+    document.body.classList.remove('light-theme');
+  }
+  const landBtn = document.getElementById('landingThemeBtn');
+  if(landBtn) landBtn.textContent = theme === 'light' ? '🌙' : '☀️';
+}
+function toggleTheme(){
+  const dashPage = document.getElementById('dashboard-page');
+  const current = dashPage ? dashPage.getAttribute('data-theme') : 'dark';
+  const next = current === 'light' ? 'dark' : 'light';
+  applyTheme(next);
+  // Re-render charts agar warna chart menyesuaikan tema
+  setTimeout(() => renderAllCharts(), 50);
+}
+function loadTheme(){
+  const saved = localStorage.getItem('pangkal_theme') || 'dark';
+  applyTheme(saved);
+}
+
+async function init(){
+  checkSession();
+  loadTheme();
+  loadPanduanFromStorage();
+  (function(){ var m=document.getElementById('confirmModal'); if(m) m.onclick=function(e){if(e.target===this)resolveConfirm(false);}; })();
+  // Tampilkan data cache/default dulu — UI langsung bisa dipakai
+  loadFromCache();
+  buildYearDropdown();
+  updateYearUI();
+  renderAllCharts();
+  showLoading(false); // pastikan overlay tersembunyi
+  // Firebase sync di background — tidak memblokir UI
+  await initFirebase();
+  await loadDB();
+}
+// ══ _confirm HELPER ══════════════════
+function _confirm(msg,sub,icon,okLabel,cb){
+  var m=document.getElementById('confirmModal');
+  document.getElementById('cmMsg').textContent=msg;
+  document.getElementById('cmSub').textContent=sub||'';
+  document.getElementById('cmIcon').textContent=icon||'⚠️';
+  var ok=document.getElementById('cmOk');
+  ok.textContent=okLabel||'Ya, Lanjutkan';
+  ok.style.background=(icon==='🔐'||icon==='↺'&&0)?'var(--red)':icon==='↺'?'var(--orange)':'var(--red)';
+  m.style.display='flex';
+  m._cb=cb;
+}
+function resolveConfirm(r){
+  var m=document.getElementById('confirmModal');
+  m.style.display='none';
+  if(r&&m._cb) m._cb();
+  m._cb=null;
+}
+
+// ══ PANDUAN EDITOR ═══════════════════
+var _peData=null;
+function initPanduanEdit(){
+  if(!_peData) _peData=JSON.parse(JSON.stringify(PANDUAN_DATA));
+  var te=document.getElementById('peTabs'); if(!te) return;
+  te.innerHTML=_peData.map(function(s,i){
+    return '<button class="pe-tab'+(i===0?' active':'')+" onclick=\"swPeTab('"+s.kat+"',this)\">"+s.label+'</button>';
+  }).join('');
+  var tot=_peData.reduce(function(n,s){return n+s.indikator.length;},0);
+  var el=document.getElementById('peCountTag'); if(el) el.textContent=tot+' indikator';
+  renderPeBody(_peData[0].kat);
+}
+function swPeTab(kat,btn){
+  document.querySelectorAll('.pe-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active'); renderPeBody(kat);
+}
+function peEsc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function renderPeBody(kat){
+  var be=document.getElementById('peBody'); if(!be||!_peData) return;
+  var sec=null; for(var i=0;i<_peData.length;i++){if(_peData[i].kat===kat){sec=_peData[i];break;}}
+  if(!sec){be.innerHTML='<p style="color:var(--muted);padding:10px">Tidak ditemukan.</p>';return;}
+  var h='<div style="display:flex;justify-content:flex-end;margin-bottom:14px;">';
+  h+='<button class="btn btn-ghost" onclick="peAdd(\''+kat+'\')" style="font-size:0.7rem;padding:5px 12px;">+ Tambah Indikator</button></div>';
+  sec.indikator.forEach(function(ind,i){
+    var esc_kat=kat.replace(/'/g,"\\'");
+    h+='<div class="pe-card" id="pec-'+kat+'-'+i+'">'
+      +'<div class="pe-card-hdr" onclick="peTog(\''+esc_kat+'\','+i+')">'
+        +'<div class="pe-num">'+(i+1)+'</div>'
+        +'<div class="pe-card-name" id="pen-'+kat+'-'+i+'">'+peEsc(ind.nama)+'</div>'
+        +'<button class="pe-del" onclick="event.stopPropagation();peDel(\''+esc_kat+'\','+i+')">🗑</button>'
+        +'<span class="pe-chev">▼</span></div>'
+      +'<div class="pe-card-body">'
+        +'<div class="pe-row">'
+          +'<div class="pe-field"><div class="pe-lbl">Nama *</div>'
+            +'<input class="pe-inp" type="text" value="'+peEsc(ind.nama)+'" oninput="peChg(\''+esc_kat+'\','+i+',\'nama\',this)"></div>'
+          +'<div class="pe-field"><div class="pe-lbl">Singkatan</div>'
+            +'<input class="pe-inp" type="text" value="'+peEsc(ind.singkatan||'')+'" oninput="peChg(\''+esc_kat+'\','+i+',\'singkatan\',this)"></div>'
+        +'</div>'
+        +'<div class="pe-row">'
+          +'<div class="pe-field"><div class="pe-lbl">Satuan</div>'
+            +'<input class="pe-inp" type="text" value="'+peEsc(ind.satuan||'')+'" oninput="peChg(\''+esc_kat+'\','+i+',\'satuan\',this)"></div>'
+          +'<div class="pe-field"><div class="pe-lbl">Sumber</div>'
+            +'<input class="pe-inp" type="text" value="'+peEsc(ind.sumber||'')+'" oninput="peChg(\''+esc_kat+'\','+i+',\'sumber\',this)"></div>'
+        +'</div>'
+        +'<div class="pe-field"><div class="pe-lbl">Deskripsi *</div>'
+          +'<textarea class="pe-inp tall" oninput="peChg(\''+esc_kat+'\','+i+',\'desc\',this)">'+peEsc(ind.desc||'')+'</textarea></div>'
+        +'<div class="pe-field"><div class="pe-lbl">Formula</div>'
+          +'<textarea class="pe-inp tall mono" oninput="peChg(\''+esc_kat+'\','+i+',\'formula\',this)">'+peEsc(ind.formula||'')+'</textarea></div>'
+      +'</div></div>';
+  });
+  be.innerHTML=h;
+}
+function peTog(kat,i){var c=document.getElementById('pec-'+kat+'-'+i);if(c)c.classList.toggle('open');}
+function peChg(kat,i,f,el){
+  var sec=null; for(var s=0;s<_peData.length;s++){if(_peData[s].kat===kat){sec=_peData[s];break;}}
+  if(!sec||!sec.indikator[i])return;
+  sec.indikator[i][f]=el.value; el.classList.add('dirty');
+  if(f==='nama'){var n=document.getElementById('pen-'+kat+'-'+i);if(n)n.textContent=el.value||'(tanpa nama)';}
+}
+function peAdd(kat){
+  if(!_peData)return;
+  var sec=null; for(var s=0;s<_peData.length;s++){if(_peData[s].kat===kat){sec=_peData[s];break;}}
+  if(!sec)return;
+  sec.indikator.push({nama:'Indikator Baru',singkatan:'',satuan:'%',desc:'Penjelasan...',formula:'',sumber:'BPS'});
+  renderPeBody(kat);
+  var ni=sec.indikator.length-1;
+  setTimeout(function(){var c=document.getElementById('pec-'+kat+'-'+ni);if(c){c.classList.add('open');c.scrollIntoView({behavior:'smooth',block:'center'});}},80);
+}
+function peDel(kat,i){
+  _confirm('Hapus indikator ini?','Data panduan ini akan dihapus.','🗑','Ya, Hapus',function(){
+    if(!_peData)return;
+    var sec=null; for(var s=0;s<_peData.length;s++){if(_peData[s].kat===kat){sec=_peData[s];break;}}
+    if(sec){sec.indikator.splice(i,1);renderPeBody(kat);}
+  });
+}
+function savePanduanEdit(){
+  if(!_peData)return;
+  PANDUAN_DATA.length=0; _peData.forEach(function(s){PANDUAN_DATA.push(JSON.parse(JSON.stringify(s)));});
+  try{localStorage.setItem('pangkal_panduan',JSON.stringify(PANDUAN_DATA));}catch(e){}
+  document.querySelectorAll('.pe-inp.dirty').forEach(function(el){el.classList.remove('dirty');});
+  if(typeof renderPanduan==='function')renderPanduan();
+  toast('Penjelasan berhasil disimpan','success');
+}
+function loadPanduanFromStorage(){
+  try{
+    var s=localStorage.getItem('pangkal_panduan');
+    if(s){var p=JSON.parse(s);PANDUAN_DATA.length=0;p.forEach(function(x){PANDUAN_DATA.push(x);});}
+  }catch(e){}
+}
+
+window.addEventListener('beforeunload',e=>{
+  if(changeCount>0){e.preventDefault();e.returnValue='Ada perubahan yang belum disimpan!';}
+});
+</script>
+
+</div>
+
+
+
+
+
+<script>
+var _dashInited = false;
+
+function openDashboard(tab) {
+  document.getElementById('dashboard-page').style.display = 'block';
+  document.getElementById('dash-styles').removeAttribute('style');
+  document.body.style.overflow = 'hidden';
+  // Sync tema landing page ke dashboard
+  const isLight = document.body.classList.contains('light-theme');
+  const dashPage = document.getElementById('dashboard-page');
+  if(dashPage) dashPage.setAttribute('data-theme', isLight ? 'light' : 'dark');
+  const dashBtn = document.getElementById('themeToggleBtn');
+  if(dashBtn) dashBtn.textContent = isLight ? '🌙' : '☀️';
+  if (!_dashInited) {
+    _dashInited = true;
+    if (typeof init === 'function') init();
+    if (tab) setTimeout(function() { goTab(tab); }, 400);
+  } else {
+    if (tab) goTab(tab);
+  }
+}
+
+function goTab(tab) {
+  var navBtns = document.querySelectorAll('#view-dashboard nav button');
+  navBtns.forEach(function(btn) {
+    if (btn.getAttribute('onclick') === "showTab('" + tab + "',this)") {
+      btn.click();
+    }
+  });
+}
+
+function closeDashboard() {
+  document.getElementById('dashboard-page').style.display = 'none';
+  document.body.style.overflow = '';
+}
+</script>
+
+<script>
+// ── LANDING PAGE THEME ──
+function toggleLandingTheme(){
+  const isLight = document.body.classList.toggle('light-theme');
+  const btn = document.getElementById('landingThemeBtn');
+  if(btn) btn.textContent = isLight ? '🌙' : '☀️';
+  localStorage.setItem('pangkal_theme', isLight ? 'light' : 'dark');
+  // Sync dengan dashboard jika sudah dibuka
+  const dashPage = document.getElementById('dashboard-page');
+  if(dashPage) dashPage.setAttribute('data-theme', isLight ? 'light' : 'dark');
+  const dashBtn = document.getElementById('themeToggleBtn');
+  if(dashBtn) dashBtn.textContent = isLight ? '🌙' : '☀️';
+}
+
+// Apply saved theme on page load
+(function(){
+  const saved = localStorage.getItem('pangkal_theme');
+  if(saved === 'light'){
+    document.body.classList.add('light-theme');
+    const btn = document.getElementById('landingThemeBtn');
+    if(btn) btn.textContent = '🌙';
+  }
+})();
+</script>
+</body>
+</html>
